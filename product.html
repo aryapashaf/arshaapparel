@@ -1,0 +1,662 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard | Products</title>
+
+  <!-- GLOBAL DASHBOARD STYLE -->
+  <link rel="stylesheet" href="dashboard.css">
+
+  <!-- PRODUCTS PAGE STYLE -->
+  <link rel="stylesheet" href="product.css">
+
+  <!-- FONT -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h1 class="brand">ArshaApparel</h1>
+
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a class="active">Products</a>
+      <a href="orders.html">Orders</a>
+      <a href="payments.html">Payments</a>
+      <a href="login.html" class="logout">Logout</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div>
+        <h2>Products</h2>
+        <p class="welcome">Manage your product catalog</p>
+      </div>
+
+      <div class="top-actions">
+        <button class="btn-add"><span class="btn-icon">+</span> Add Product</button>
+        <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open menu">☰</button>
+      </div>
+    </header>
+
+    <!-- PRODUCTS CONTENT -->
+    <section class="products-card">
+      <table class="products-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Stock</th>
+            <th>Price</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody id="productsBody">
+  <tr>
+    <td colspan="6">Loading products...</td>
+  </tr>
+</tbody>
+      </table>
+    </section>
+
+    <div class="modal" id="productModal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-header">
+          <h3 id="modalTitle">Add Product</h3>
+          <button class="icon-close" id="closeModal" type="button" aria-label="Close">×</button>
+        </div>
+        <form id="productForm" novalidate>
+          <input type="hidden" id="productId">
+          <div class="form-grid">
+            <label class="form-field">
+              <span>Product Name</span>
+              <input id="productName" type="text" placeholder="Product name" required>
+              <small class="field-error alert-box" id="nameError">Name is required.</small>
+            </label>
+            <label class="form-field">
+              <span>Category</span>
+              <div class="select-wrap category-select-wrap" id="productCategoryWrap">
+                <button class="category-toggle" id="productCategoryToggle" type="button" aria-expanded="false">
+                  <span class="category-label" id="productCategoryLabel">Select category</span>
+                  <span class="category-caret"></span>
+                </button>
+                <div class="category-dropdown" id="productCategoryDropdown">
+                  <button class="category-option is-active" type="button" data-value="">All Category</button>
+                  <button class="category-option" type="button" data-value="shirt">Shirt</button>
+                  <button class="category-option" type="button" data-value="t-shirt">T-shirt</button>
+                  <button class="category-option" type="button" data-value="jacket">Jacket</button>
+                  <button class="category-option" type="button" data-value="hoodie">Hoodie</button>
+                  <button class="category-option" type="button" data-value="shoes">Shoes</button>
+                  <button class="category-option" type="button" data-value="socks">Socks</button>
+                  <button class="category-option" type="button" data-value="sandals">Sandals</button>
+                  <button class="category-option" type="button" data-value="pants">Pants</button>
+                </div>
+                <select id="productCategory">
+                  <option value="" selected>Select category</option>
+                  <option value="shirt">Shirt</option>
+                  <option value="t-shirt">T-shirt</option>
+                  <option value="jacket">Jacket</option>
+                  <option value="hoodie">Hoodie</option>
+                  <option value="shoes">Shoes</option>
+                  <option value="socks">Socks</option>
+                  <option value="sandals">Sandals</option>
+                  <option value="pants">Pants</option>
+                </select>
+              </div>
+            </label>
+            <label class="form-field">
+              <span>Price</span>
+              <div class="number-field">
+                <input id="productPrice" type="number" step="0.01" min="0" placeholder="0.00" required>
+                <div class="stepper-group">
+                  <button class="stepper" type="button" data-target="productPrice" data-step="1" aria-label="Increase price">+</button>
+                  <button class="stepper" type="button" data-target="productPrice" data-step="-1" aria-label="Decrease price">−</button>
+                </div>
+              </div>
+              <small class="field-error alert-box" id="priceError">Price is required.</small>
+            </label>
+            <label class="form-field">
+              <span>Stock</span>
+              <div class="number-field">
+                <input id="productStock" type="number" step="1" min="0" placeholder="0">
+                <div class="stepper-group">
+                  <button class="stepper" type="button" data-target="productStock" data-step="1" aria-label="Increase stock">+</button>
+                  <button class="stepper" type="button" data-target="productStock" data-step="-1" aria-label="Decrease stock">−</button>
+                </div>
+              </div>
+            </label>
+            <label class="form-field">
+              <span>Status</span>
+              <div class="select-wrap status-select-wrap" id="productStatusWrap">
+                <button class="category-toggle" id="productStatusToggle" type="button" aria-expanded="false">
+                  <span class="category-label" id="productStatusLabel">Active</span>
+                  <span class="category-caret"></span>
+                </button>
+                <div class="category-dropdown" id="productStatusDropdown">
+                  <button class="category-option is-active" type="button" data-value="active">Active</button>
+                  <button class="category-option" type="button" data-value="out">Out</button>
+                  <button class="category-option" type="button" data-value="draft">Draft</button>
+                </div>
+                <select id="productStatus">
+                  <option value="active">Active</option>
+                  <option value="out">Out</option>
+                  <option value="draft">Draft</option>
+                </select>
+              </div>
+            </label>
+            <label class="form-field">
+              <span>Upload Image</span>
+              <input id="productImageFile" type="file" accept="image/*">
+              <small class="help-text" id="imageHint">Choose a file to replace the current image.</small>
+            </label>
+            <div class="image-preview" id="imagePreview">
+              <img id="imagePreviewImg" alt="Preview">
+              <button class="remove-image" id="removeImageBtn" type="button">Remove image</button>
+            </div>
+          </div>
+          <div class="form-alert alert-box" id="formAlert" role="alert" aria-live="polite">
+            Please fill out required fields.
+          </div>
+          <div class="modal-actions">
+            <button class="btn-add" type="submit" id="saveBtn">Save Product</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </main>
+</div>
+<div class="nav-overlay" id="navOverlay"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="supabase-init.js"></script>
+<script>
+  const productsBody = document.getElementById('productsBody');
+  const supabaseClient = window.supabaseClient;
+  const addButton = document.querySelector('.btn-add');
+  const modal = document.getElementById('productModal');
+  const closeModalBtn = document.getElementById('closeModal');
+  const modalTitle = document.getElementById('modalTitle');
+  const productForm = document.getElementById('productForm');
+  const productIdInput = document.getElementById('productId');
+  const productNameInput = document.getElementById('productName');
+  const productCategoryInput = document.getElementById('productCategory');
+  const productCategoryWrap = document.getElementById('productCategoryWrap');
+  const productCategoryToggle = document.getElementById('productCategoryToggle');
+  const productCategoryDropdown = document.getElementById('productCategoryDropdown');
+  const productCategoryLabel = document.getElementById('productCategoryLabel');
+  const productPriceInput = document.getElementById('productPrice');
+  const productStockInput = document.getElementById('productStock');
+  const productStatusInput = document.getElementById('productStatus');
+  const productStatusWrap = document.getElementById('productStatusWrap');
+  const productStatusToggle = document.getElementById('productStatusToggle');
+  const productStatusDropdown = document.getElementById('productStatusDropdown');
+  const productStatusLabel = document.getElementById('productStatusLabel');
+  const productImageFileInput = document.getElementById('productImageFile');
+  const imageHint = document.getElementById('imageHint');
+  const imagePreview = document.getElementById('imagePreview');
+  const imagePreviewImg = document.getElementById('imagePreviewImg');
+  const removeImageBtn = document.getElementById('removeImageBtn');
+  const formAlert = document.getElementById('formAlert');
+  const nameError = document.getElementById('nameError');
+  const priceError = document.getElementById('priceError');
+  const productsCache = new Map();
+  let currentImageUrl = null;
+  let previewObjectUrl = null;
+  let removeImage = false;
+
+  const idrFormatter = new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0
+  });
+
+  function formatPrice(value) {
+    const number = Number(value);
+    if (Number.isNaN(number)) return value || '-';
+    return idrFormatter.format(number);
+  }
+
+  function statusClass(status) {
+    const value = (status || '').toLowerCase();
+    if (value === 'active') return 'success';
+    if (value === 'out') return 'warning';
+    if (value === 'draft') return 'info';
+    return 'info';
+  }
+
+  function renderRows(products) {
+    if (!productsBody) return;
+    if (!products || products.length === 0) {
+      productsBody.innerHTML = `
+        <tr>
+          <td colspan="6">No products found.</td>
+        </tr>
+      `;
+      return;
+    }
+
+    productsCache.clear();
+    products.forEach(product => productsCache.set(product.id, product));
+
+    productsBody.innerHTML = products.map(product => `
+      <tr>
+        <td>${product.name}</td>
+        <td>${product.category || '-'}</td>
+        <td><span class="badge ${statusClass(product.status)}">${product.status || '-'}</span></td>
+        <td>${product.stock ?? '-'}</td>
+        <td>${formatPrice(product.price)}</td>
+        <td>
+          <div class="action-buttons">
+            <button class="action-btn edit" type="button" data-id="${product.id}">
+              <span class="action-icon">E</span>
+              Edit
+            </button>
+            <button class="action-btn danger" type="button" data-id="${product.id}">
+              <span class="action-icon">D</span>
+              Delete
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  async function fetchProducts() {
+    if (!supabaseClient) return;
+    const { data, error } = await supabaseClient
+      .from('products')
+      .select('id, name, price, category, status, stock')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.warn('Failed to load products', error.message);
+      return;
+    }
+
+    renderRows(data);
+  }
+
+  function openModal(mode, product) {
+    if (!modal) return;
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    modalTitle.textContent = mode === 'edit' ? 'Edit Product' : 'Add Product';
+    productIdInput.value = product?.id || '';
+    productNameInput.value = product?.name || '';
+    productCategoryInput.value = product?.category || '';
+    productPriceInput.value = product?.price ?? '';
+    productStockInput.value = product?.stock ?? '';
+    productStatusInput.value = product?.status || 'active';
+    currentImageUrl = product?.image || null;
+    removeImage = false;
+    if (productImageFileInput) productImageFileInput.value = '';
+    setPreview(currentImageUrl);
+    if (imageHint) {
+      imageHint.textContent = currentImageUrl
+        ? 'Current image set. Choose a file to replace it.'
+        : 'No image yet. Upload a file if you want one.';
+    }
+    syncCategoryDropdown();
+    syncStatusDropdown();
+  }
+
+  function closeModal() {
+    if (!modal) return;
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    productForm.reset();
+    productIdInput.value = '';
+    currentImageUrl = null;
+    removeImage = false;
+    setPreview(null);
+    if (previewObjectUrl) {
+      URL.revokeObjectURL(previewObjectUrl);
+      previewObjectUrl = null;
+    }
+    if (formAlert) formAlert.classList.remove('show');
+  }
+
+  function setPreview(url) {
+    if (!imagePreview || !imagePreviewImg) return;
+    if (url) {
+      imagePreviewImg.src = url;
+      imagePreview.classList.add('show');
+    } else {
+      imagePreviewImg.removeAttribute('src');
+      imagePreview.classList.remove('show');
+    }
+  }
+
+  function getStoragePathFromUrl(url) {
+    if (!url) return null;
+    const marker = '/storage/v1/object/public/product-images/';
+    const index = url.indexOf(marker);
+    if (index === -1) return null;
+    return url.slice(index + marker.length);
+  }
+
+  async function saveProduct(event) {
+    event.preventDefault();
+    if (!supabaseClient) return;
+
+    if (!validateForm()) {
+      return;
+    }
+
+    let imageUrl = currentImageUrl;
+    const file = productImageFileInput?.files?.[0];
+    if (file) {
+      const extension = file.name.split('.').pop();
+      const unique = (window.crypto?.randomUUID?.() || Math.random().toString(36).slice(2));
+      const filePath = `products/${Date.now()}-${unique}.${extension}`;
+      const { error: uploadError } = await supabaseClient
+        .storage
+        .from('product-images')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) {
+        console.warn('Failed to upload image', uploadError.message);
+        return;
+      }
+
+      const { data: publicData } = supabaseClient
+        .storage
+        .from('product-images')
+        .getPublicUrl(filePath);
+
+      imageUrl = publicData?.publicUrl || imageUrl;
+    }
+
+    if (removeImage && !file) {
+      imageUrl = null;
+    }
+
+    const payload = {
+      name: productNameInput.value.trim(),
+      category: productCategoryInput.value || null,
+      price: Number(productPriceInput.value),
+      stock: productStockInput.value === '' ? null : Number(productStockInput.value),
+      status: productStatusInput.value,
+      image: imageUrl
+    };
+
+    const id = productIdInput.value;
+    const { error } = id
+      ? await supabaseClient.from('products').update(payload).eq('id', id)
+      : await supabaseClient.from('products').insert(payload);
+
+    if (error) {
+      console.warn('Failed to save product', error.message);
+      return;
+    }
+
+    if ((removeImage || file) && currentImageUrl && currentImageUrl !== imageUrl) {
+      const path = getStoragePathFromUrl(currentImageUrl);
+      if (path) {
+        await supabaseClient.storage.from('product-images').remove([path]);
+      }
+    }
+
+    closeModal();
+  }
+
+  async function deleteProduct(id) {
+    if (!supabaseClient || !id) return;
+    const existing = productsCache.get(id);
+    const { error } = await supabaseClient.from('products').delete().eq('id', id);
+    if (error) {
+      console.warn('Failed to delete product', error.message);
+      return;
+    }
+
+    if (existing?.image) {
+      const path = getStoragePathFromUrl(existing.image);
+      if (path) {
+        await supabaseClient.storage.from('product-images').remove([path]);
+      }
+    }
+  }
+
+  if (supabaseClient) {
+    fetchProducts();
+    supabaseClient
+      .channel('public:products')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, fetchProducts)
+      .subscribe();
+  }
+
+  if (addButton) {
+    addButton.addEventListener('click', () => openModal('add'));
+  }
+
+  if (productsBody) {
+    productsBody.addEventListener('click', (event) => {
+      const editBtn = event.target.closest('.action-btn.edit');
+      const deleteBtn = event.target.closest('.action-btn.danger');
+      if (editBtn) {
+        const product = productsCache.get(editBtn.dataset.id);
+        openModal('edit', product);
+      }
+      if (deleteBtn) {
+        const id = deleteBtn.dataset.id;
+        if (id && window.confirm('Delete this product?')) {
+          deleteProduct(id);
+        }
+      }
+    });
+  }
+
+  if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+  if (modal) {
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) closeModal();
+    });
+  }
+  if (productForm) productForm.addEventListener('submit', saveProduct);
+
+  if (productImageFileInput) {
+    productImageFileInput.addEventListener('change', () => {
+      const file = productImageFileInput.files?.[0];
+      if (!file) return;
+      if (previewObjectUrl) {
+        URL.revokeObjectURL(previewObjectUrl);
+      }
+      previewObjectUrl = URL.createObjectURL(file);
+      setPreview(previewObjectUrl);
+      removeImage = false;
+    });
+  }
+
+  if (removeImageBtn) {
+    removeImageBtn.addEventListener('click', () => {
+      removeImage = true;
+      if (productImageFileInput) productImageFileInput.value = '';
+      setPreview(null);
+      if (previewObjectUrl) {
+        URL.revokeObjectURL(previewObjectUrl);
+        previewObjectUrl = null;
+      }
+    });
+  }
+
+  function syncCategoryDropdown() {
+    if (!productCategoryInput || !productCategoryLabel || !productCategoryDropdown) return;
+    const currentValue = productCategoryInput.value || '';
+    const currentOption = Array.from(productCategoryInput.options).find(option => option.value === currentValue);
+    productCategoryLabel.textContent = currentOption?.textContent || 'Select category';
+    productCategoryDropdown.querySelectorAll('.category-option').forEach((option) => {
+      option.classList.toggle('is-active', option.dataset.value === currentValue);
+    });
+  }
+
+  function syncStatusDropdown() {
+    if (!productStatusInput || !productStatusLabel || !productStatusDropdown) return;
+    const currentValue = productStatusInput.value || 'active';
+    const currentOption = Array.from(productStatusInput.options).find(option => option.value === currentValue);
+    productStatusLabel.textContent = currentOption?.textContent || 'Active';
+    productStatusDropdown.querySelectorAll('.category-option').forEach((option) => {
+      option.classList.toggle('is-active', option.dataset.value === currentValue);
+    });
+  }
+
+  function setCategoryOpen(open) {
+    if (!productCategoryWrap || !productCategoryToggle || !productCategoryDropdown) return;
+    productCategoryWrap.classList.toggle('is-open', open);
+    productCategoryToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
+  function setStatusOpen(open) {
+    if (!productStatusWrap || !productStatusToggle || !productStatusDropdown) return;
+    productStatusWrap.classList.toggle('is-open', open);
+    productStatusToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
+  if (productCategoryToggle) {
+    productCategoryToggle.addEventListener('click', () => {
+      const open = productCategoryWrap?.classList.contains('is-open');
+      setCategoryOpen(!open);
+    });
+  }
+
+  if (productCategoryDropdown) {
+    productCategoryDropdown.addEventListener('click', (event) => {
+      const option = event.target.closest('.category-option');
+      if (!option || !productCategoryInput) return;
+      productCategoryInput.value = option.dataset.value || '';
+      productCategoryInput.dispatchEvent(new Event('change', { bubbles: true }));
+      syncCategoryDropdown();
+      setCategoryOpen(false);
+    });
+  }
+
+  if (productStatusToggle) {
+    productStatusToggle.addEventListener('click', () => {
+      const open = productStatusWrap?.classList.contains('is-open');
+      setStatusOpen(!open);
+    });
+  }
+
+  if (productStatusDropdown) {
+    productStatusDropdown.addEventListener('click', (event) => {
+      const option = event.target.closest('.category-option');
+      if (!option || !productStatusInput) return;
+      productStatusInput.value = option.dataset.value || 'active';
+      productStatusInput.dispatchEvent(new Event('change', { bubbles: true }));
+      syncStatusDropdown();
+      setStatusOpen(false);
+    });
+  }
+
+  function setFieldError(input, errorEl, message) {
+    const field = input.closest('.form-field');
+    if (message) {
+      field.classList.add('invalid');
+      errorEl.textContent = message;
+      errorEl.classList.add('show');
+      return false;
+    }
+    field.classList.remove('invalid');
+    errorEl.classList.remove('show');
+    return true;
+  }
+
+  function validateForm() {
+    let valid = true;
+    if (!productNameInput.value.trim()) {
+      valid = setFieldError(productNameInput, nameError, 'Name is required.') && valid;
+    } else {
+      setFieldError(productNameInput, nameError, '');
+    }
+
+    if (!productPriceInput.value.trim()) {
+      valid = setFieldError(productPriceInput, priceError, 'Price is required.') && valid;
+    } else {
+      setFieldError(productPriceInput, priceError, '');
+    }
+
+    if (formAlert) {
+      formAlert.classList.toggle('show', !valid);
+    }
+    return valid;
+  }
+
+  [productNameInput, productPriceInput].forEach((input) => {
+    input.addEventListener('input', validateForm);
+  });
+
+  if (productCategoryInput) {
+    productCategoryInput.addEventListener('change', syncCategoryDropdown);
+  }
+
+  document.addEventListener('click', (event) => {
+    if (productCategoryWrap && !productCategoryWrap.contains(event.target)) {
+      setCategoryOpen(false);
+    }
+    if (productStatusWrap && !productStatusWrap.contains(event.target)) {
+      setStatusOpen(false);
+    }
+  });
+
+  if (productStatusInput) {
+    productStatusInput.addEventListener('change', syncStatusDropdown);
+  }
+
+  document.querySelectorAll('.stepper').forEach((button) => {
+    button.addEventListener('click', () => {
+      const targetId = button.dataset.target;
+      const input = document.getElementById(targetId);
+      if (!input) return;
+      if (input.value === '') input.value = '0';
+      const step = Number(button.dataset.step || 1);
+      if (step > 0) {
+        input.stepUp();
+      } else {
+        input.stepDown();
+      }
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+  });
+
+  const menuToggle = document.getElementById('menuToggle');
+  const navOverlay = document.getElementById('navOverlay');
+
+  function setNavOpen(open) {
+    document.body.classList.toggle('nav-open', open);
+  }
+
+  if (menuToggle) {
+    menuToggle.addEventListener('click', () => {
+      setNavOpen(!document.body.classList.contains('nav-open'));
+    });
+  }
+
+  if (navOverlay) {
+    navOverlay.addEventListener('click', () => setNavOpen(false));
+  }
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') setNavOpen(false);
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 900) setNavOpen(false);
+  });
+</script></body>
+</html>
+
+

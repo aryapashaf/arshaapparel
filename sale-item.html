@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>All Products | ArshaApparel</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="sale-item.css">
+
+  <!-- FONT -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <a class="logo back-logo" href="index.html" aria-label="Back to home">
+        <span class="back-icon">←</span>
+        ArshaApparel
+      </a>
+    </div>
+
+    <div class="nav-right">
+      <div class="category-wrap" id="categoryWrap">
+        <button class="category-toggle" id="categoryToggle" type="button" aria-label="Category filter" aria-expanded="false">
+          <span class="category-icon" aria-hidden="true">&#128203;</span>
+          <span class="category-label" id="categoryLabel">All Category</span>
+          <span class="category-caret" aria-hidden="true"></span>
+        </button>
+        <div class="category-dropdown" id="categoryDropdown" role="listbox" aria-hidden="true">
+          <button class="category-option is-active" type="button" data-value="all">All Category</button>
+          <button class="category-option" type="button" data-value="shirt">Shirt</button>
+          <button class="category-option" type="button" data-value="t-shirt">T-shirt</button>
+          <button class="category-option" type="button" data-value="jacket">Jacket</button>
+          <button class="category-option" type="button" data-value="hoodie">Hoodie</button>
+          <button class="category-option" type="button" data-value="shoes">Shoes</button>
+          <button class="category-option" type="button" data-value="socks">Socks</button>
+          <button class="category-option" type="button" data-value="sandals">Sandals</button>
+          <button class="category-option" type="button" data-value="pants">Pants</button>
+        </div>
+        <div class="select-wrap">
+          <select class="category-select" id="categorySelect">
+            <option value="all" selected>All Category</option>
+            <option value="shirt">Shirt</option>
+            <option value="t-shirt">T-shirt</option>
+            <option value="jacket">Jacket</option>
+            <option value="hoodie">Hoodie</option>
+            <option value="shoes">Shoes</option>
+            <option value="socks">Socks</option>
+            <option value="sandals">Sandals</option>
+            <option value="pants">Pants</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="search-box" id="searchBox">
+        <input 
+          type="text"
+          class="search-input"
+          id="searchInput"
+          placeholder="Search product..."
+        />
+      </div>
+      <button class="search-toggle" id="searchToggle" type="button" aria-label="Search">
+        &#128269;
+      </button>
+
+      <a class="cart-link" href="cart.html" aria-label="Cart">
+        &#128722;
+        <span class="cart-badge" id="cartBadge" aria-hidden="true"></span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="container">
+    <h1 class="page-title">All Products</h1>
+
+    <section class="product-grid" id="productGrid">
+
+      <!-- CARD -->
+      <div class="product-card">
+        <div class="product-image">Loading...</div>
+        <div class="product-info">
+          <h3>Loading products...</h3>
+          <p class="category">...</p>
+          <p class="price">$0.00</p>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-init.js"></script>
+  <script>
+    const productGrid = document.getElementById('productGrid');
+    const searchInput = document.getElementById('searchInput');
+    const categorySelect = document.getElementById('categorySelect');
+    const supabaseClient = window.supabaseClient;
+    const categoryToggle = document.getElementById('categoryToggle');
+    const categoryWrap = document.getElementById('categoryWrap');
+    const categoryDropdown = document.getElementById('categoryDropdown');
+    const categoryLabel = document.getElementById('categoryLabel');
+    const searchToggle = document.getElementById('searchToggle');
+    const searchBox = document.getElementById('searchBox');
+    const cartBadge = document.getElementById('cartBadge');
+    let allProducts = [];
+
+    const idrFormatter = new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0
+    });
+
+    function formatPrice(value) {
+      const number = Number(value);
+      if (Number.isNaN(number)) return idrFormatter.format(0);
+      return idrFormatter.format(number);
+    }
+
+    function renderProducts(items) {
+      if (!productGrid) return;
+      if (!items || items.length === 0) {
+        productGrid.innerHTML = `
+          <div class="product-card">
+            <div class="product-image">No products</div>
+            <div class="product-info">
+              <h3>Products not found</h3>
+              <p class="category">Try another keyword</p>
+              <p class="price">Rp0</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      productGrid.innerHTML = items.map(product => `
+        <div class="product-card">
+          <div class="product-image" ${product.image ? `style="background-image: url('${product.image}');"` : ''}></div>
+          <div class="product-info">
+            <h3>${product.name}</h3>
+            <p class="category">${product.category || '-'}</p>
+            <p class="price">${formatPrice(product.price)}</p>
+            <button class="btn-add-cart" type="button" data-product-id="${product.id}">Add to Cart</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function applyFilters() {
+      const keyword = searchInput?.value.trim().toLowerCase() || '';
+      const selectedCategory = categorySelect?.value || 'all';
+
+      let filtered = allProducts;
+      if (selectedCategory !== 'all') {
+        filtered = filtered.filter(product =>
+          (product.category || '').toLowerCase() === selectedCategory
+        );
+      }
+
+      if (keyword) {
+        filtered = filtered.filter(product =>
+          product.name?.toLowerCase().includes(keyword) ||
+          product.category?.toLowerCase().includes(keyword)
+        );
+      }
+
+      renderProducts(filtered);
+    }
+
+    function syncCategoryDropdown() {
+      if (!categoryDropdown || !categorySelect) return;
+      const current = categorySelect.value || 'all';
+      if (categoryLabel) {
+        const currentOption = Array.from(categorySelect.options).find(option => option.value === current);
+        categoryLabel.textContent = currentOption?.textContent || 'All Category';
+      }
+      categoryDropdown.querySelectorAll('.category-option').forEach((option) => {
+        option.classList.toggle('is-active', option.dataset.value === current);
+      });
+    }
+
+    async function fetchProducts() {
+      if (!supabaseClient) return;
+      const { data, error } = await supabaseClient
+        .from('products')
+        .select('id, name, price, category, image, status')
+        .neq('status', 'draft')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.warn('Failed to load products', error.message);
+        return;
+      }
+
+      allProducts = data || [];
+      applyFilters();
+    }
+
+    function applyCategoryFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const category = params.get('category');
+      if (categorySelect && category) {
+        const value = category.toLowerCase();
+        const exists = Array.from(categorySelect.options).some(option => option.value === value);
+        if (exists) {
+          categorySelect.value = value;
+          syncCategoryDropdown();
+        }
+      }
+    }
+
+    if (supabaseClient) {
+      applyCategoryFromUrl();
+      fetchProducts();
+      supabaseClient
+        .channel('public:products')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, fetchProducts)
+        .subscribe();
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', applyFilters);
+    }
+
+    if (categorySelect) {
+      categorySelect.addEventListener('change', applyFilters);
+      categorySelect.addEventListener('change', syncCategoryDropdown);
+    }
+
+    function setSearchOpen(open) {
+      if (!searchBox) return;
+      searchBox.classList.toggle('is-open', open);
+      if (open && searchInput) {
+        searchInput.focus();
+      }
+    }
+
+    if (searchToggle) {
+      searchToggle.addEventListener('click', () => {
+        const isOpen = searchBox?.classList.contains('is-open');
+        setSearchOpen(!isOpen);
+      });
+    }
+
+    function setCategoryOpen(open) {
+      if (!categoryWrap || !categoryDropdown) return;
+      categoryWrap.classList.toggle('is-open', open);
+      categoryToggle?.setAttribute('aria-expanded', open ? 'true' : 'false');
+      categoryDropdown.setAttribute('aria-hidden', open ? 'false' : 'true');
+    }
+
+    if (categoryToggle) {
+      categoryToggle.addEventListener('click', () => {
+        const open = categoryWrap?.classList.contains('is-open');
+        setCategoryOpen(!open);
+        setSearchOpen(false);
+      });
+    }
+
+    if (categoryDropdown) {
+      categoryDropdown.addEventListener('click', (event) => {
+        const button = event.target.closest('.category-option');
+        if (!button || !categorySelect) return;
+        categorySelect.value = button.dataset.value || 'all';
+        syncCategoryDropdown();
+        applyFilters();
+        setCategoryOpen(false);
+      });
+    }
+
+    document.addEventListener('click', (event) => {
+      if (searchBox && searchToggle && !searchBox.contains(event.target) && !searchToggle.contains(event.target)) {
+        setSearchOpen(false);
+      }
+      if (categoryWrap && !categoryWrap.contains(event.target)) {
+        setCategoryOpen(false);
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        setSearchOpen(false);
+        setCategoryOpen(false);
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 820) {
+        setSearchOpen(true);
+        setCategoryOpen(false);
+      } else {
+        setSearchOpen(false);
+        setCategoryOpen(false);
+      }
+    });
+
+    if (searchBox) {
+      setSearchOpen(window.innerWidth > 820);
+    }
+
+    syncCategoryDropdown();
+
+
+    function getUserId() {
+      const stored = localStorage.getItem('loginInfo') || sessionStorage.getItem('loginInfo');
+      if (!stored) return null;
+      try {
+        const data = JSON.parse(stored);
+        if (data.role !== 'user') return null;
+        return data.email || data.name || null;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function setCartBadge(count) {
+      if (!cartBadge) return;
+      if (count > 0) {
+        cartBadge.textContent = count > 99 ? '99+' : String(count);
+        cartBadge.style.display = 'inline-flex';
+      } else {
+        cartBadge.style.display = 'none';
+      }
+    }
+
+    async function fetchCartCount() {
+      if (!supabaseClient || !cartBadge) return;
+      const userId = getUserId();
+      if (!userId) {
+        setCartBadge(0);
+        return;
+      }
+      const { data, error } = await supabaseClient
+        .from('cart_items')
+        .select('quantity, product:products(status)')
+        .eq('user_id', userId);
+
+      if (error) {
+        console.warn('Failed to load cart count', error.message);
+        return;
+      }
+      const count = (data || []).reduce((sum, item) => {
+        if (item.product?.status === 'draft') return sum;
+        return sum + (item.quantity || 0);
+      }, 0);
+      setCartBadge(count);
+    }
+
+    async function addToCart(productId) {
+      if (!supabaseClient || !productId) return;
+      const userId = getUserId();
+      if (!userId) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const { data: productData, error: productError } = await supabaseClient
+        .from('products')
+        .select('stock, status')
+        .eq('id', productId)
+        .maybeSingle();
+
+      if (productError) {
+        console.warn('Failed to load product stock', productError.message);
+        return;
+      }
+      if (productData?.status === 'draft') {
+        return;
+      }
+
+      const { data, error } = await supabaseClient
+        .from('cart_items')
+        .select('id, quantity')
+        .eq('user_id', userId)
+        .eq('product_id', productId)
+        .maybeSingle();
+
+      if (error && error.code !== 'PGRST116') {
+        console.warn('Failed to check cart', error.message);
+        return;
+      }
+
+      if (data?.id) {
+        const next = data.quantity + 1;
+        const stock = productData?.stock;
+        if (typeof stock === 'number' && next > stock) {
+          alert(`Stok produk tidak cukup. Maksimal ${stock}.`);
+          return;
+        }
+        const { error: updateError } = await supabaseClient
+          .from('cart_items')
+          .update({ quantity: next })
+          .eq('id', data.id);
+        if (updateError) {
+          console.warn('Failed to update cart', updateError.message);
+        }
+        return;
+      }
+
+      const stock = productData?.stock;
+      if (typeof stock === 'number' && stock < 1) {
+        alert('Stok produk tidak cukup.');
+        return;
+      }
+
+      const { error: insertError } = await supabaseClient
+        .from('cart_items')
+        .insert({ user_id: userId, product_id: productId, quantity: 1 });
+
+      if (insertError) {
+        console.warn('Failed to add to cart', insertError.message);
+      }
+    }
+
+    if (productGrid) {
+      productGrid.addEventListener('click', (event) => {
+        const button = event.target.closest('.btn-add-cart');
+        if (!button) return;
+        const productId = button.dataset.productId;
+        addToCart(productId);
+      });
+    }
+
+    if (supabaseClient && cartBadge) {
+      const userId = getUserId();
+      if (userId) {
+        fetchCartCount();
+        supabaseClient
+          .channel(`public:cart_items:${userId}`)
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'cart_items', filter: `user_id=eq.${userId}` }, fetchCartCount)
+          .subscribe();
+      }
+    }
+  </script>
+</body>
+</html>

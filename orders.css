@@ -1,0 +1,23 @@
+﻿.table-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.order-img {
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--border);
+  background-size: cover;
+  background-position: center;
+}
+
+@media (max-width: 900px) {
+  .order-img {
+    width: 44px;
+    height: 44px;
+  }
+}

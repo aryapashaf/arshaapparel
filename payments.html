@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard | Payments</title>
+
+  <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="payments.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h1 class="brand">ArshaApparel</h1>
+
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="product.html">Products</a>
+      <a href="orders.html">Orders</a>
+      <a class="active">Payments</a>
+      <a href="login.html" class="logout" id="logoutBtn">Logout</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <h2>Payments</h2>
+        <p class="welcome">Payment status after checkout</p>
+      </div>
+      <div class="top-actions">
+        <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open menu">☰</button>
+      </div>
+    </header>
+
+    <section class="table-card">
+      <h3>Payment Records</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Order ID</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody id="paymentsBody">
+          <tr>
+            <td colspan="5">Loading payments...</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>
+<div class="nav-overlay" id="navOverlay"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="supabase-init.js"></script>
+<script>
+  const paymentsBody = document.getElementById('paymentsBody');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const supabaseClient = window.supabaseClient;
+
+  function getRole() {
+    const stored = localStorage.getItem('loginInfo') || sessionStorage.getItem('loginInfo');
+    if (!stored) return null;
+    try {
+      const data = JSON.parse(stored);
+      return data.role || null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  if (getRole() !== 'admin') {
+    window.location.href = 'index.html';
+  }
+
+  const idrFormatter = new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0
+  });
+
+  function renderPayments(items) {
+    if (!paymentsBody) return;
+    if (!items || items.length === 0) {
+      paymentsBody.innerHTML = `
+        <tr>
+          <td colspan="5">No payments yet.</td>
+        </tr>
+      `;
+      return;
+    }
+
+    paymentsBody.innerHTML = items.map(item => `
+      <tr>
+        <td>${item.user_name || item.user_id || 'User'}</td>
+        <td>${idrFormatter.format(item.total || 0)}</td>
+        <td><span class="badge ${item.status === 'paid' ? 'success' : 'warning'}">${item.status || 'pending'}</span></td>
+        <td>${item.order_id || '-'}</td>
+        <td>${new Date(item.created_at).toLocaleDateString('id-ID')}</td>
+      </tr>
+    `).join('');
+  }
+
+  async function fetchPayments() {
+    if (!supabaseClient) return;
+    const { data, error } = await supabaseClient
+      .from('payments')
+      .select('id, order_id, user_id, user_name, total, status, created_at')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.warn('Failed to load payments', error.message);
+      return;
+    }
+
+    renderPayments(data || []);
+  }
+
+  if (supabaseClient) {
+    fetchPayments();
+    supabaseClient
+      .channel('public:payments')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'payments' }, fetchPayments)
+      .subscribe();
+  }
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', (event) => {
+      event.preventDefault();
+      localStorage.removeItem('loginInfo');
+      sessionStorage.removeItem('loginInfo');
+      window.location.href = 'login.html';
+    });
+  }
+
+  const menuToggle = document.getElementById('menuToggle');
+  const navOverlay = document.getElementById('navOverlay');
+
+  function setNavOpen(open) {
+    document.body.classList.toggle('nav-open', open);
+  }
+
+  if (menuToggle) {
+    menuToggle.addEventListener('click', () => {
+      setNavOpen(!document.body.classList.contains('nav-open'));
+    });
+  }
+
+  if (navOverlay) {
+    navOverlay.addEventListener('click', () => setNavOpen(false));
+  }
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') setNavOpen(false);
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 900) setNavOpen(false);
+  });
+</script>
+</body>
+</html>

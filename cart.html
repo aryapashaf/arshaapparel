@@ -1,0 +1,447 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shopping Cart</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="cart.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a class="logo back-logo" href="index.html" aria-label="Back to home">
+      <span class="back-icon">←</span>
+      ArshaApparel
+    </a>
+
+    <div class="search-box" id="searchBox">
+      <input type="text" id="cartSearch" placeholder="Search product..." />
+    </div>
+
+    <button class="search-icon" id="searchToggle" type="button" aria-label="Search">
+      &#128269;
+    </button>
+  </nav>
+
+  <!-- CONTENT -->
+  <main class="container">
+    <h1>Shopping Cart</h1>
+    <div class="cart-alert" id="cartAlert" role="alert" aria-live="polite"></div>
+
+    <section class="cart-layout">
+
+      <!-- CART ITEMS -->
+      <div class="card">
+        <h2 class="card-title">Cart Items</h2>
+
+        <div id="cartItems">
+          <div class="cart-empty">Loading cart...</div>
+        </div>
+      </div>
+
+      <!-- ORDER SUMMARY -->
+      <aside class="card">
+        <h2 class="card-title">Order Summary</h2>
+
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span id="subtotalValue">Rp0</span>
+        </div>
+
+        <div class="summary-row">
+          <span>Shipping</span>
+          <span>Free</span>
+        </div>
+
+        <div class="summary-row summary-total">
+          <span>Total</span>
+          <span id="totalValue">Rp0</span>
+        </div>
+
+        <button class="checkout-btn" id="checkoutBtn">Checkout</button>
+      </aside>
+
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-init.js"></script>
+  <script>
+    const cartItems = document.getElementById('cartItems');
+    const subtotalValue = document.getElementById('subtotalValue');
+    const totalValue = document.getElementById('totalValue');
+    const supabaseClient = window.supabaseClient;
+    const cartAlert = document.getElementById('cartAlert');
+    let alertTimer = null;
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    const searchInput = document.getElementById('cartSearch');
+    const searchToggle = document.getElementById('searchToggle');
+    const searchBox = document.getElementById('searchBox');
+    let cartData = [];
+
+    function getUserId() {
+      const stored = localStorage.getItem('loginInfo') || sessionStorage.getItem('loginInfo');
+      if (!stored) return null;
+      try {
+        const data = JSON.parse(stored);
+        if (data.role !== 'user') return null;
+        return data.email || data.name || null;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function getUserName() {
+      const stored = localStorage.getItem('loginInfo') || sessionStorage.getItem('loginInfo');
+      if (!stored) return null;
+      try {
+        const data = JSON.parse(stored);
+        return data.name || data.email || 'User';
+      } catch (error) {
+        return 'User';
+      }
+    }
+
+    const idrFormatter = new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0
+    });
+
+    function showCartAlert(message) {
+      if (!cartAlert) return;
+      cartAlert.textContent = message;
+      cartAlert.classList.add('show');
+      if (alertTimer) clearTimeout(alertTimer);
+      alertTimer = setTimeout(() => {
+        cartAlert.classList.remove('show');
+      }, 2000);
+    }
+
+    function formatPrice(value) {
+      const number = Number(value);
+      if (Number.isNaN(number)) return idrFormatter.format(0);
+      return idrFormatter.format(number);
+    }
+
+    function renderCart(items) {
+      if (!cartItems) return;
+      if (!items || items.length === 0) {
+        cartItems.innerHTML = '<div class="cart-empty">Your cart is empty.</div>';
+        subtotalValue.textContent = idrFormatter.format(0);
+        totalValue.textContent = idrFormatter.format(0);
+        return;
+      }
+
+      let subtotal = 0;
+      cartItems.innerHTML = items.map(item => {
+        const price = Number(item.product?.price || 0);
+        const line = price * item.quantity;
+        subtotal += line;
+        return `
+          <div class="cart-item" data-id="${item.id}">
+            <div class="product-img" ${item.product?.image ? `style="background-image: url('${item.product.image}');"` : ''}></div>
+            <div class="product-info">
+              <h4>${item.product?.name || 'Product'}</h4>
+              <p>${item.product?.category || ''}</p>
+            </div>
+            <div class="qty-control">
+              <button class="qty-btn" data-action="decrease">-</button>
+              <span>${item.quantity}</span>
+              <button class="qty-btn" data-action="increase">+</button>
+            </div>
+            <div class="cart-meta">
+              <div class="price">${formatPrice(line)}</div>
+              <button class="remove" data-action="remove" aria-label="Remove item">&times;</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      subtotalValue.textContent = formatPrice(subtotal);
+      totalValue.textContent = formatPrice(subtotal);
+    }
+
+    function applySearch() {
+      if (!searchInput) {
+        renderCart(cartData);
+        return;
+      }
+      const keyword = searchInput.value.trim().toLowerCase();
+      if (!keyword) {
+        renderCart(cartData);
+        return;
+      }
+      const filtered = cartData.filter(item => {
+        const name = (item.product?.name || '').toLowerCase();
+        const category = (item.product?.category || '').toLowerCase();
+        return name.includes(keyword) || category.includes(keyword);
+      });
+      renderCart(filtered);
+    }
+
+    async function fetchCart() {
+      if (!supabaseClient) return;
+      const userId = getUserId();
+      if (!userId) {
+        cartItems.innerHTML = '<div class="cart-empty">Please login to see your cart.</div>';
+        subtotalValue.textContent = idrFormatter.format(0);
+        totalValue.textContent = idrFormatter.format(0);
+        return;
+      }
+      const { data, error } = await supabaseClient
+        .from('cart_items')
+        .select('id, quantity, product:products(id, name, price, image, category, status)')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.warn('Failed to load cart', error.message);
+        return;
+      }
+
+      cartData = (data || []).filter(item => item.product && item.product.status !== 'draft');
+      applySearch();
+    }
+
+    async function checkout() {
+      if (!supabaseClient) return;
+      const userId = getUserId();
+      if (!userId) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const { data: items, error } = await supabaseClient
+        .from('cart_items')
+        .select('id, quantity, product:products(id, name, price, image, category, status, stock)')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.warn('Failed to checkout', error.message);
+        showCartAlert('Checkout gagal. Coba lagi.');
+        return;
+      }
+
+      const validItems = (items || []).filter(item => item.product && item.product.status !== 'draft');
+      if (validItems.length === 0) {
+        showCartAlert('Cart kosong atau produk tidak tersedia.');
+        return;
+      }
+
+      const insufficient = validItems.find(item => typeof item.product?.stock === 'number' && item.quantity > item.product.stock);
+      if (insufficient) {
+        showCartAlert(`Stok ${insufficient.product?.name} tidak cukup.`);
+        return;
+      }
+
+      const total = validItems.reduce((sum, item) => {
+        const price = Number(item.product?.price || 0);
+        return sum + price * item.quantity;
+      }, 0);
+
+      const { data: order, error: orderError } = await supabaseClient
+        .from('orders')
+        .insert({
+          user_id: userId,
+          user_name: getUserName(),
+          total
+        })
+        .select('id')
+        .single();
+
+      if (orderError) {
+        console.warn('Failed to create order', orderError.message);
+        showCartAlert('Gagal membuat order.');
+        return;
+      }
+
+      const orderItemsPayload = validItems.map(item => ({
+        order_id: order.id,
+        product_id: item.product?.id || null,
+        product_name: item.product?.name || 'Product',
+        product_image: item.product?.image || null,
+        price: item.product?.price || 0,
+        quantity: item.quantity
+      }));
+
+      const { error: itemsError } = await supabaseClient
+        .from('order_items')
+        .insert(orderItemsPayload);
+
+      if (itemsError) {
+        console.warn('Failed to create order items', itemsError.message);
+        showCartAlert('Gagal menyimpan detail order.');
+        return;
+      }
+
+      const stockResults = await Promise.all(
+        validItems.map(async (item) => {
+          const productId = item.product?.id;
+          const stock = item.product?.stock;
+          const currentStatus = item.product?.status;
+          if (!productId || typeof stock !== 'number') return;
+          const nextStock = Math.max(0, stock - item.quantity);
+          const nextStatus = nextStock === 0
+            ? 'out'
+            : (currentStatus === 'out' ? 'active' : currentStatus);
+
+          const { error: stockError } = await supabaseClient
+            .from('products')
+            .update({ stock: nextStock, status: nextStatus })
+            .eq('id', productId);
+          return stockError || null;
+        })
+      );
+      if (stockResults.some(Boolean)) {
+        showCartAlert('Gagal mengurangi stok produk.');
+      }
+
+      const { error: paymentError } = await supabaseClient
+        .from('payments')
+        .insert({
+          order_id: order.id,
+          user_id: userId,
+          user_name: getUserName(),
+          total,
+          status: 'pending'
+        });
+
+      if (paymentError) {
+        console.warn('Failed to create payment record', paymentError.message);
+      }
+
+      const { error: clearError } = await supabaseClient
+        .from('cart_items')
+        .delete()
+        .eq('user_id', userId);
+      if (clearError) {
+        console.warn('Failed to clear cart', clearError.message);
+        showCartAlert('Gagal menghapus cart.');
+        return;
+      }
+
+      window.location.href = 'orders.html';
+    }
+
+    async function updateQuantity(id, delta) {
+      if (!supabaseClient || !id) return;
+      const { data, error } = await supabaseClient
+        .from('cart_items')
+        .select('quantity, product:products(stock)')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (error) {
+        console.warn('Failed to fetch item', error.message);
+        return;
+      }
+
+      const next = (data?.quantity || 1) + delta;
+      const stock = data?.product?.stock;
+      if (typeof stock === 'number' && next > stock) {
+        showCartAlert(`Stok produk tidak cukup. Maksimal ${stock}.`);
+        return;
+      }
+      if (next <= 0) {
+        await removeItem(id);
+        return;
+      }
+
+      const { error: updateError } = await supabaseClient
+        .from('cart_items')
+        .update({ quantity: next })
+        .eq('id', id);
+
+      if (updateError) {
+        console.warn('Failed to update quantity', updateError.message);
+      }
+    }
+
+    async function removeItem(id) {
+      if (!supabaseClient || !id) return;
+      const { error } = await supabaseClient
+        .from('cart_items')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.warn('Failed to remove item', error.message);
+      }
+    }
+
+    if (cartItems) {
+      cartItems.addEventListener('click', (event) => {
+        const row = event.target.closest('.cart-item');
+        if (!row) return;
+        const id = row.dataset.id;
+        const action = event.target.dataset.action;
+        if (action === 'increase') updateQuantity(id, 1);
+        if (action === 'decrease') updateQuantity(id, -1);
+        if (action === 'remove') removeItem(id);
+      });
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', applySearch);
+    }
+
+    function setSearchOpen(open) {
+      if (!searchBox) return;
+      searchBox.classList.toggle('is-open', open);
+      if (open && searchInput) {
+        searchInput.focus();
+      }
+    }
+
+    if (searchToggle) {
+      searchToggle.addEventListener('click', () => {
+        const open = searchBox?.classList.contains('is-open');
+        setSearchOpen(!open);
+      });
+    }
+
+    document.addEventListener('click', (event) => {
+      if (!searchBox || !searchToggle) return;
+      if (!searchBox.contains(event.target) && !searchToggle.contains(event.target)) {
+        setSearchOpen(false);
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 900) {
+        setSearchOpen(true);
+      } else {
+        setSearchOpen(false);
+      }
+    });
+
+    if (searchBox) {
+      setSearchOpen(window.innerWidth > 900);
+    }
+
+    if (supabaseClient) {
+      fetchCart();
+      const userId = getUserId();
+      if (userId) {
+        supabaseClient
+          .channel(`public:cart_items:${userId}`)
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'cart_items', filter: `user_id=eq.${userId}` }, fetchCart)
+          .subscribe();
+      }
+    }
+
+    if (checkoutBtn) {
+      checkoutBtn.addEventListener('click', checkout);
+    }
+  </script>
+</body>
+</html>

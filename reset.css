@@ -1,0 +1,119 @@
+:root {
+  --bg-main: #0F172A;
+  --bg-surface: #111827;
+  --bg-elevated: #1E293B;
+  --border: #1F2937;
+  --text-primary: #E5E7EB;
+  --text-secondary: #94A3B8;
+  --danger: #F87171;
+}
+
+.reset-card {
+  max-width: 720px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+}
+
+.reset-title {
+  margin: 0 0 8px;
+}
+
+.reset-subtitle {
+  margin: 0 0 18px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.reset-warning {
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  background: rgba(127, 29, 29, 0.22);
+  color: #FCA5A5;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+
+.reset-list {
+  margin: 0 0 18px;
+  padding-left: 18px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.reset-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.reset-field label {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.reset-field input {
+  background: #020617;
+  border: 1px solid #1E293B;
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.reset-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn-danger {
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  background: rgba(127, 29, 29, 0.45);
+  color: #FEE2E2;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-outline {
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.reset-status {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.reset-status.success {
+  color: #86EFAC;
+}
+
+.reset-status.error {
+  color: #FCA5A5;
+}
+
+@media (max-width: 640px) {
+  .reset-card {
+    padding: 18px;
+  }
+}

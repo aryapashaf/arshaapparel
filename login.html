@@ -1,0 +1,285 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign In</title>
+
+  <link rel="stylesheet" href="login.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="login-wrapper">
+    <div class="login-card">
+      <a href="index.html" class="close-login" aria-label="Cancel login">&times;</a>
+
+      <section class="login-visual">
+        <div class="visual-content">
+          <span class="visual-badge">ArshaApparel</span>
+          <h1>Sign in to manage your experience</h1>
+          <p>Secure access for both shoppers and admins with role-based controls.</p>
+
+          <div class="feature-list">
+            <div class="feature-item">
+              <span class="dot"></span>
+              <div>
+                <h4>Role-based access</h4>
+                <p>Switch between user and admin with one toggle.</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <span class="dot"></span>
+              <div>
+                <h4>Secure sign in</h4>
+                <p>Inline validation and password visibility control.</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <span class="dot"></span>
+              <div>
+                <h4>Smart sessions</h4>
+                <p>Remember your session or keep it temporary.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="login-panel">
+        <!-- ROLE TOGGLE -->
+        <div class="role-toggle">
+          <div class="toggle-track" id="toggleTrack">
+            <div class="toggle-labels">
+              <span data-role="user" class="active">User</span>
+              <span data-role="admin">Admin</span>
+            </div>
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+
+        <h2>Sign In</h2>
+        <p class="login-desc" id="loginDesc">Masuk sebagai user untuk berbelanja dan melihat produk.</p>
+        <div class="demo-alert" role="note">
+          Demo only: jangan gunakan email atau password asli.
+        </div>
+
+        <form id="loginForm" novalidate>
+          <div class="field">
+            <label for="nameInput">Full Name</label>
+            <input id="nameInput" type="text" placeholder="Your name" required />
+            <small class="field-error" id="nameError">Nama wajib diisi.</small>
+          </div>
+
+          <div class="field">
+            <label for="emailInput">Email</label>
+            <input id="emailInput" type="email" placeholder="name@email.com" required />
+            <small class="field-error" id="emailError">Email tidak valid.</small>
+          </div>
+
+          <div class="field">
+            <label for="passwordInput">Password</label>
+            <div class="password-field">
+              <input id="passwordInput" type="password" placeholder="Minimum 6 karakter" required />
+              <button type="button" class="toggle-pass" id="togglePass">Show</button>
+            </div>
+            <small class="field-error" id="passwordError">Password minimal 6 karakter.</small>
+          </div>
+
+          <div class="form-row">
+            <label class="remember">
+              <input type="checkbox" id="rememberMe" />
+              Remember me
+            </label>
+            <a href="#" class="forgot">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="btn-login">Login</button>
+        </form>
+
+        <div class="form-alert" id="formAlert" role="alert" aria-live="polite">
+          Please fill out all fields.
+        </div>
+
+        <p class="fine-print">By continuing, you agree to our Terms & Privacy Policy.</p>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const track = document.getElementById('toggleTrack');
+    const labels = document.querySelectorAll('.toggle-labels span');
+    const desc = document.getElementById('loginDesc');
+    const form = document.getElementById('loginForm');
+    const alertBox = document.getElementById('formAlert');
+    const nameInput = document.getElementById('nameInput');
+    const emailInput = document.getElementById('emailInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const rememberMe = document.getElementById('rememberMe');
+    const togglePass = document.getElementById('togglePass');
+
+    const fieldMap = [
+      { input: nameInput, error: document.getElementById('nameError') },
+      { input: emailInput, error: document.getElementById('emailError') },
+      { input: passwordInput, error: document.getElementById('passwordError') }
+    ];
+
+    let role = 'user';
+    let alertTimer = null;
+
+    function updateToggle() {
+      labels.forEach(label => {
+        label.classList.toggle('active', label.dataset.role === role);
+      });
+
+      track.classList.toggle('admin', role === 'admin');
+      desc.textContent = role === 'admin'
+        ? 'Masuk sebagai admin untuk mengelola produk dan pesanan.'
+        : 'Masuk sebagai user untuk berbelanja dan melihat produk.';
+    }
+
+    function showAlert() {
+      alertBox.classList.add('show');
+      if (alertTimer) {
+        clearTimeout(alertTimer);
+      }
+      alertTimer = setTimeout(() => {
+        alertBox.classList.remove('show');
+        alertTimer = null;
+      }, 2000);
+    }
+
+    function setFieldState(input, errorEl, message) {
+      const field = input.closest('.field');
+      if (message) {
+        field.classList.add('invalid');
+        errorEl.textContent = message;
+        errorEl.classList.add('show');
+        input.setAttribute('aria-invalid', 'true');
+        return false;
+      }
+      field.classList.remove('invalid');
+      errorEl.classList.remove('show');
+      input.removeAttribute('aria-invalid');
+      return true;
+    }
+
+    function validateField(input, errorEl) {
+      const value = input.value.trim();
+      if (!value) {
+        return setFieldState(input, errorEl, 'Wajib diisi.');
+      }
+
+      if (input === emailInput && !input.validity.valid) {
+        return setFieldState(input, errorEl, 'Email tidak valid.');
+      }
+
+      if (input === passwordInput && value.length < 6) {
+        return setFieldState(input, errorEl, 'Password minimal 6 karakter.');
+      }
+
+      return setFieldState(input, errorEl, '');
+    }
+
+    function validateForm() {
+      let valid = true;
+      fieldMap.forEach(({ input, error }) => {
+        if (!validateField(input, error)) {
+          valid = false;
+        }
+      });
+
+      if (!valid) {
+        showAlert();
+      } else if (alertBox.classList.contains('show')) {
+        alertBox.classList.remove('show');
+        if (alertTimer) {
+          clearTimeout(alertTimer);
+          alertTimer = null;
+        }
+      }
+
+      return valid;
+    }
+
+    labels.forEach(label => {
+      label.addEventListener('click', () => {
+        role = label.dataset.role;
+        updateToggle();
+      });
+    });
+
+    track.addEventListener('click', (event) => {
+      const rect = track.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      role = x >= rect.width / 2 ? 'admin' : 'user';
+      updateToggle();
+    });
+
+    togglePass.addEventListener('click', () => {
+      const showing = passwordInput.type === 'text';
+      passwordInput.type = showing ? 'password' : 'text';
+      togglePass.textContent = showing ? 'Show' : 'Hide';
+    });
+
+    fieldMap.forEach(({ input, error }) => {
+      input.addEventListener('input', () => {
+        validateField(input, error);
+      });
+    });
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!validateForm()) {
+        return;
+      }
+
+      const loginInfo = {
+        role,
+        name: nameInput.value.trim(),
+        email: emailInput.value.trim(),
+        remember: rememberMe.checked,
+        loggedInAt: new Date().toISOString()
+      };
+
+      const storage = rememberMe.checked ? localStorage : sessionStorage;
+      storage.setItem('loginInfo', JSON.stringify(loginInfo));
+      if (storage === localStorage) {
+        sessionStorage.removeItem('loginInfo');
+      } else {
+        localStorage.removeItem('loginInfo');
+      }
+
+      window.location.href = role === 'admin' ? 'dashboard.html' : 'index.html';
+    });
+
+    const storedLocal = localStorage.getItem('loginInfo');
+    const storedSession = sessionStorage.getItem('loginInfo');
+    const stored = storedLocal || storedSession;
+
+    if (stored) {
+      try {
+        const data = JSON.parse(stored);
+        if (data.role) {
+          role = data.role;
+        }
+        if (data.name) {
+          nameInput.value = data.name;
+        }
+        if (data.email) {
+          emailInput.value = data.email;
+        }
+        rememberMe.checked = Boolean(storedLocal);
+      } catch (error) {
+        localStorage.removeItem('loginInfo');
+        sessionStorage.removeItem('loginInfo');
+      }
+    }
+
+    updateToggle();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,461 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ArshaApparel</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <div class="logo">ArshaApparel</div>
+    </div>
+
+    <div class="nav-actions">
+      <a class="icon-btn cart-mobile" href="cart.html" aria-label="Cart">
+        &#128722;
+        <span class="cart-badge" id="cartBadgeMobile" aria-hidden="true"></span>
+      </a>
+      <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-controls="navDrawer" aria-expanded="false">
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+      </button>
+    </div>
+
+    <div class="nav-drawer" id="navDrawer">
+      <div class="nav-drawer-inner">
+        <div class="nav-center">
+          <a href="#">Home</a>
+          <a href="sale-item.html">Products</a>
+          <a href="#categories">Categories</a>
+        </div>
+
+        <div class="nav-right">
+          <a class="icon-btn" href="cart.html" aria-label="Cart">
+            &#128722;
+            <span class="cart-badge" id="cartBadge" aria-hidden="true"></span>
+          </a>
+          <a href="login.html" class="btn-login" id="loginLink">Login</a>
+          <div class="profile-menu" id="profileMenu">
+            <button class="profile-btn" id="profileBtn" type="button">
+              <span class="profile-avatar" id="profileAvatar">U</span>
+              <span class="profile-name" id="profileName">User</span>
+            </button>
+            <div class="profile-dropdown" id="profileDropdown">
+              <a href="dashboard.html" id="dashboardLink">Dashboard</a>
+              <a href="#" id="settingsLink">Settings</a>
+              <button type="button" id="logoutBtn">Logout</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div class="nav-overlay" id="navOverlay"></div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1>Premium Products, Minimal Experience</h1>
+    <p>Discover curated products with a clean and elegant shopping experience.</p>
+    <a href="#featured" class="btn-primary">Shop Now</a>
+  </section>
+
+  <!-- FEATURED PRODUCTS -->
+  <section class="section" id="featured">
+    <h2 class="section-title">Featured Products</h2>
+
+    <div class="product-grid" id="featuredGrid">
+      <div class="product-card">
+        <div class="product-img"></div>
+        <h3>Loading products...</h3>
+        <span>--</span>
+        <button class="btn-secondary" disabled>Loading</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHOP BY CATEGORIES -->
+  <section class="section" id="categories">
+    <h2 class="section-title">Shop by Categories</h2>
+
+    <div class="categories-track">
+      <div class="category-card">
+        <div class="category-icon">T</div>
+        <h3>T-shirt</h3>
+        <p>Everyday staples built for comfort.</p>
+        <a class="btn-ghost" href="sale-item.html?category=t-shirt">Shop Now</a>
+      </div>
+      <div class="category-card">
+        <div class="category-icon">S</div>
+        <h3>Shirt</h3>
+        <p>Smart casual pieces for every mood.</p>
+        <a class="btn-ghost" href="sale-item.html?category=shirt">Shop Now</a>
+      </div>
+      <div class="category-card">
+        <div class="category-icon">J</div>
+        <h3>Jacket</h3>
+        <p>Layered warmth with sleek silhouettes.</p>
+        <a class="btn-ghost" href="sale-item.html?category=jacket">Shop Now</a>
+      </div>
+      <div class="category-card">
+        <div class="category-icon">H</div>
+        <h3>Hoodie</h3>
+        <p>Soft essentials for off-duty days.</p>
+        <a class="btn-ghost" href="sale-item.html?category=hoodie">Shop Now</a>
+      </div>
+      <div class="category-card">
+        <div class="category-icon">SH</div>
+        <h3>Shoes</h3>
+        <p>Step into refined everyday comfort.</p>
+        <a class="btn-ghost" href="sale-item.html?category=shoes">Shop Now</a>
+      </div>
+      <div class="category-card">
+        <div class="category-icon">SA</div>
+        <h3>Sandals</h3>
+        <p>Minimal looks for warm-weather days.</p>
+        <a class="btn-ghost" href="sale-item.html?category=sandals">Shop Now</a>
+      </div>
+      <div class="category-card">
+        <div class="category-icon">SO</div>
+        <h3>Socks</h3>
+        <p>Comfort details that finish the fit.</p>
+        <a class="btn-ghost" href="sale-item.html?category=socks">Shop Now</a>
+      </div>
+      <div class="category-card">
+        <div class="category-icon">P</div>
+        <h3>Pants</h3>
+        <p>Tailored fits with clean lines.</p>
+        <a class="btn-ghost" href="sale-item.html?category=pants">Shop Now</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROMO SLIDER -->
+  <section class="promo-slider" aria-label="Promotional banner slider">
+    <div class="promo-viewport">
+      <div class="promo-track">
+        <div class="promo-slide">
+          <img src="assets-promo/promo-hoodie.png" alt="Promo banner hoodie">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>Arya Pasha© 2026 ArshaApparel. All rights reserved.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-init.js"></script>
+  <script>
+    const profileMenu = document.getElementById('profileMenu');
+    const profileBtn = document.getElementById('profileBtn');
+    const profileName = document.getElementById('profileName');
+    const profileAvatar = document.getElementById('profileAvatar');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const settingsLink = document.getElementById('settingsLink');
+    const dashboardLink = document.getElementById('dashboardLink');
+    const loginLink = document.getElementById('loginLink');
+    const navToggle = document.getElementById('navToggle');
+    const navOverlay = document.getElementById('navOverlay');
+    const navDrawer = document.getElementById('navDrawer');
+
+    function getLoginInfo() {
+      const stored = localStorage.getItem('loginInfo') || sessionStorage.getItem('loginInfo');
+      if (!stored) return null;
+      try {
+        return JSON.parse(stored);
+      } catch (error) {
+        localStorage.removeItem('loginInfo');
+        sessionStorage.removeItem('loginInfo');
+        return null;
+      }
+    }
+
+    function updateProfileUI() {
+      const data = getLoginInfo();
+      const role = data?.role;
+      const isLoggedIn = Boolean(role);
+      profileMenu.style.display = isLoggedIn ? 'inline-flex' : 'none';
+      loginLink.style.display = isLoggedIn ? 'none' : 'inline-flex';
+
+      if (!isLoggedIn) {
+        return;
+      }
+
+      const name = data?.name || (data?.email ? data.email.split('@')[0] : (role === 'admin' ? 'Admin' : 'User'));
+      profileName.textContent = name;
+      profileAvatar.textContent = name.trim().charAt(0).toUpperCase() || (role === 'admin' ? 'A' : 'U');
+      settingsLink.href = '#';
+      dashboardLink.style.display = role === 'admin' ? 'block' : 'none';
+    }
+
+    profileBtn.addEventListener('click', () => {
+      profileMenu.classList.toggle('open');
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!profileMenu.contains(event.target)) {
+        profileMenu.classList.remove('open');
+      }
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('loginInfo');
+      sessionStorage.removeItem('loginInfo');
+      profileMenu.classList.remove('open');
+      updateProfileUI();
+      cartBadges.forEach((badge) => {
+        badge.style.display = 'none';
+      });
+    });
+
+    updateProfileUI();
+
+    function setNavOpen(open) {
+      document.body.classList.toggle('nav-open', open);
+      if (navToggle) {
+        navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+    }
+
+    if (navToggle) {
+      navToggle.addEventListener('click', () => {
+        setNavOpen(!document.body.classList.contains('nav-open'));
+      });
+    }
+
+    if (navOverlay) {
+      navOverlay.addEventListener('click', () => setNavOpen(false));
+    }
+
+    if (navDrawer) {
+      navDrawer.addEventListener('click', (event) => {
+        if (event.target.closest('a')) {
+          setNavOpen(false);
+        }
+      });
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        setNavOpen(false);
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 820) {
+        setNavOpen(false);
+      }
+    });
+
+    const featuredGrid = document.getElementById('featuredGrid');
+    const supabaseClient = window.supabaseClient;
+
+    const idrFormatter = new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0
+    });
+
+    function formatPrice(value) {
+      const number = Number(value);
+      if (Number.isNaN(number)) return value || '-';
+      return idrFormatter.format(number);
+    }
+
+    function renderFeatured(products) {
+      if (!featuredGrid) return;
+      if (!products || products.length === 0) {
+        featuredGrid.innerHTML = `
+          <div class="product-card">
+            <div class="product-img"></div>
+            <h3>No products yet</h3>
+            <span>--</span>
+            <button class="btn-secondary" disabled>Unavailable</button>
+          </div>
+        `;
+        return;
+      }
+
+      featuredGrid.innerHTML = products.map(product => `
+        <div class="product-card">
+          <div class="product-img" ${product.image ? `style="background-image: url('${product.image}');"` : ''}></div>
+          <h3>${product.name}</h3>
+          <span>${formatPrice(product.price)}</span>
+          <button class="btn-secondary" type="button" data-product-id="${product.id}">Add to Cart</button>
+        </div>
+      `).join('');
+    }
+
+    async function fetchFeatured() {
+      if (!supabaseClient) return;
+      const { data, error } = await supabaseClient
+        .from('products')
+        .select('id, name, price, image, status')
+        .neq('status', 'draft')
+        .order('created_at', { ascending: false })
+        .limit(4);
+
+      if (error) {
+        console.warn('Failed to load products', error.message);
+        return;
+      }
+
+      renderFeatured(data);
+    }
+
+    if (supabaseClient && featuredGrid) {
+      fetchFeatured();
+      supabaseClient
+        .channel('public:products')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, fetchFeatured)
+        .subscribe();
+    }
+
+    function getUserId() {
+      const data = getLoginInfo();
+      if (!data || data.role !== 'user') return null;
+      return data.email || data.name || null;
+    }
+
+    const cartBadges = [
+      document.getElementById('cartBadge'),
+      document.getElementById('cartBadgeMobile')
+    ].filter(Boolean);
+
+    function setCartBadge(count) {
+      if (cartBadges.length === 0) return;
+      cartBadges.forEach((badge) => {
+        if (count > 0) {
+          badge.textContent = count > 99 ? '99+' : String(count);
+          badge.style.display = 'inline-flex';
+        } else {
+          badge.style.display = 'none';
+        }
+      });
+    }
+
+    async function fetchCartCount() {
+      if (!supabaseClient || cartBadges.length === 0) return;
+      const userId = getUserId();
+      if (!userId) {
+        setCartBadge(0);
+        return;
+      }
+      const { data, error } = await supabaseClient
+        .from('cart_items')
+        .select('quantity, product:products(status)')
+        .eq('user_id', userId);
+
+      if (error) {
+        console.warn('Failed to load cart count', error.message);
+        return;
+      }
+      const count = (data || []).reduce((sum, item) => {
+        if (item.product?.status === 'draft') return sum;
+        return sum + (item.quantity || 0);
+      }, 0);
+      setCartBadge(count);
+    }
+
+    async function addToCart(productId) {
+      if (!supabaseClient || !productId) return;
+      const userId = getUserId();
+      if (!userId) {
+        window.location.href = 'login.html';
+        return;
+      }
+      const { data: productData, error: productError } = await supabaseClient
+        .from('products')
+        .select('stock, status')
+        .eq('id', productId)
+        .maybeSingle();
+
+      if (productError) {
+        console.warn('Failed to load product stock', productError.message);
+        return;
+      }
+      if (productData?.status === 'draft') {
+        return;
+      }
+      const { data, error } = await supabaseClient
+        .from('cart_items')
+        .select('id, quantity')
+        .eq('user_id', userId)
+        .eq('product_id', productId)
+        .maybeSingle();
+
+      if (error && error.code !== 'PGRST116') {
+        console.warn('Failed to check cart', error.message);
+        return;
+      }
+
+      if (data?.id) {
+        const next = data.quantity + 1;
+        const stock = productData?.stock;
+        if (typeof stock === 'number' && next > stock) {
+          alert(`Stok produk tidak cukup. Maksimal ${stock}.`);
+          return;
+        }
+        const { error: updateError } = await supabaseClient
+          .from('cart_items')
+          .update({ quantity: next })
+          .eq('id', data.id);
+        if (updateError) {
+          console.warn('Failed to update cart', updateError.message);
+        }
+        return;
+      }
+
+      const stock = productData?.stock;
+      if (typeof stock === 'number' && stock < 1) {
+        alert('Stok produk tidak cukup.');
+        return;
+      }
+
+      const { error: insertError } = await supabaseClient
+        .from('cart_items')
+        .insert({ user_id: userId, product_id: productId, quantity: 1 });
+
+      if (insertError) {
+        console.warn('Failed to add to cart', insertError.message);
+      }
+    }
+
+    if (featuredGrid) {
+      featuredGrid.addEventListener('click', (event) => {
+        const button = event.target.closest('.btn-secondary');
+        if (!button) return;
+        const productId = button.dataset.productId;
+        addToCart(productId);
+      });
+    }
+
+    if (supabaseClient && cartBadges.length > 0) {
+      const userId = getUserId();
+      if (userId) {
+        fetchCartCount();
+        supabaseClient
+          .channel(`public:cart_items:${userId}`)
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'cart_items', filter: `user_id=eq.${userId}` }, fetchCartCount)
+          .subscribe();
+      }
+    }
+
+    const promoViewport = document.querySelector('.promo-viewport');
+    if (promoViewport) {
+      promoViewport.style.overflow = 'hidden';
+    }
+  </script>
+</body>
+</html>

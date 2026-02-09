@@ -1,0 +1,178 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard | Orders</title>
+
+  <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="orders.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h1 class="brand">ArshaApparel</h1>
+
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="product.html">Products</a>
+      <a class="active">Orders</a>
+      <a href="payments.html">Payments</a>
+      <a href="login.html" class="logout" id="logoutBtn">Logout</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <h2>Orders</h2>
+        <p class="welcome" id="welcomeText">All recent orders</p>
+      </div>
+      <div class="top-actions">
+        <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open menu">☰</button>
+      </div>
+    </header>
+
+    <section class="table-card">
+      <h3>Order Items</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Image</th>
+          </tr>
+        </thead>
+        <tbody id="ordersBody">
+          <tr>
+            <td colspan="5">Loading orders...</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>
+<div class="nav-overlay" id="navOverlay"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="supabase-init.js"></script>
+<script>
+  const ordersBody = document.getElementById('ordersBody');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const supabaseClient = window.supabaseClient;
+
+  function getRole() {
+    const stored = localStorage.getItem('loginInfo') || sessionStorage.getItem('loginInfo');
+    if (!stored) return null;
+    try {
+      const data = JSON.parse(stored);
+      return data.role || null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  if (getRole() !== 'admin') {
+    window.location.href = 'index.html';
+  }
+
+  const idrFormatter = new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0
+  });
+
+  function renderOrders(items) {
+    if (!ordersBody) return;
+    if (!items || items.length === 0) {
+      ordersBody.innerHTML = `
+        <tr>
+          <td colspan="5">No orders yet.</td>
+        </tr>
+      `;
+      return;
+    }
+
+    ordersBody.innerHTML = items.map(item => `
+      <tr>
+        <td>${item.order?.user_name || item.order?.user_id || 'User'}</td>
+        <td>${item.product_name || '-'}</td>
+        <td>${item.quantity}</td>
+        <td>${idrFormatter.format(item.price || 0)}</td>
+        <td>
+          <div class="order-img" ${item.product_image ? `style="background-image: url('${item.product_image}');"` : ''}></div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  async function fetchOrders() {
+    if (!supabaseClient) return;
+    const { data, error } = await supabaseClient
+      .from('order_items')
+      .select('id, product_name, product_image, price, quantity, order:orders(user_id, user_name, created_at)')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.warn('Failed to load orders', error.message);
+      return;
+    }
+
+    renderOrders(data || []);
+  }
+
+  if (supabaseClient) {
+    fetchOrders();
+    supabaseClient
+      .channel('public:orders')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, fetchOrders)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'order_items' }, fetchOrders)
+      .subscribe();
+  }
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', (event) => {
+      event.preventDefault();
+      localStorage.removeItem('loginInfo');
+      sessionStorage.removeItem('loginInfo');
+      window.location.href = 'login.html';
+    });
+  }
+
+  const menuToggle = document.getElementById('menuToggle');
+  const navOverlay = document.getElementById('navOverlay');
+
+  function setNavOpen(open) {
+    document.body.classList.toggle('nav-open', open);
+  }
+
+  if (menuToggle) {
+    menuToggle.addEventListener('click', () => {
+      setNavOpen(!document.body.classList.contains('nav-open'));
+    });
+  }
+
+  if (navOverlay) {
+    navOverlay.addEventListener('click', () => setNavOpen(false));
+  }
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') setNavOpen(false);
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 900) setNavOpen(false);
+  });
+</script>
+</body>
+</html>

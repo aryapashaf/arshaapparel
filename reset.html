@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard | Reset Data</title>
+
+  <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="reset.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar">
+    <h1 class="brand">ArshaApparel</h1>
+
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="product.html">Products</a>
+      <a href="orders.html">Orders</a>
+      <a href="payments.html">Payments</a>
+      <a href="login.html" class="logout" id="logoutBtn">Logout</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <h2>Reset Data</h2>
+        <p class="welcome">Only admins can reset all data.</p>
+      </div>
+      <div class="top-actions">
+        <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open menu">☰</button>
+      </div>
+    </header>
+
+    <section class="reset-card">
+      <h3 class="reset-title">Reset All Data</h3>
+      <p class="reset-subtitle">This will permanently delete all data in the database.</p>
+
+      <div class="reset-warning">
+        This action cannot be undone. All products, carts, orders, payments, and images will be deleted.
+      </div>
+
+      <ul class="reset-list">
+        <li>Products and images</li>
+        <li>Cart items</li>
+        <li>Orders and order items</li>
+        <li>Payments</li>
+      </ul>
+
+      <div class="reset-field">
+        <label for="confirmInput">Type <strong>RESET</strong> to confirm</label>
+        <input id="confirmInput" type="text" placeholder="RESET" autocomplete="off">
+      </div>
+
+      <div class="reset-actions">
+        <button class="btn-danger" id="resetBtn" type="button" disabled>Reset All Data</button>
+        <a class="btn-outline" href="dashboard.html">Cancel</a>
+      </div>
+
+      <div class="reset-status" id="resetStatus" role="status" aria-live="polite"></div>
+    </section>
+  </main>
+</div>
+<div class="nav-overlay" id="navOverlay"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="supabase-init.js"></script>
+<script>
+  const logoutBtn = document.getElementById('logoutBtn');
+  const confirmInput = document.getElementById('confirmInput');
+  const resetBtn = document.getElementById('resetBtn');
+  const resetStatus = document.getElementById('resetStatus');
+  const supabaseClient = window.supabaseClient;
+
+  function getRole() {
+    const stored = localStorage.getItem('loginInfo') || sessionStorage.getItem('loginInfo');
+    if (!stored) return null;
+    try {
+      const data = JSON.parse(stored);
+      return data.role || null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  if (getRole() !== 'admin') {
+    window.location.href = 'index.html';
+  }
+
+  function setStatus(message, tone = '') {
+    if (!resetStatus) return;
+    resetStatus.textContent = message || '';
+    resetStatus.className = `reset-status${tone ? ` ${tone}` : ''}`;
+  }
+
+  function getStoragePathFromUrl(url) {
+    if (!url) return null;
+    const marker = '/storage/v1/object/public/product-images/';
+    const index = url.indexOf(marker);
+    if (index === -1) return null;
+    return url.slice(index + marker.length);
+  }
+
+  async function deleteImages(paths) {
+    if (!supabaseClient || !paths.length) return;
+    const chunkSize = 100;
+    for (let i = 0; i < paths.length; i += chunkSize) {
+      const chunk = paths.slice(i, i + chunkSize);
+      const { error } = await supabaseClient.storage.from('product-images').remove(chunk);
+      if (error) {
+        console.warn('Failed to remove images', error.message);
+      }
+    }
+  }
+
+  async function deleteAllRows(table) {
+    if (!supabaseClient) return null;
+    return await supabaseClient
+      .from(table)
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000');
+  }
+
+  async function handleReset() {
+    if (!supabaseClient) return;
+    const confirmed = confirmInput.value.trim().toUpperCase() === 'RESET';
+    if (!confirmed) return;
+
+    if (!window.confirm('Reset ALL data? This cannot be undone.')) {
+      return;
+    }
+
+    resetBtn.disabled = true;
+    setStatus('Resetting data...', '');
+
+    const { data: products, error: productsError } = await supabaseClient
+      .from('products')
+      .select('id, image');
+
+    if (productsError) {
+      setStatus(`Failed to read products: ${productsError.message}`, 'error');
+      resetBtn.disabled = false;
+      return;
+    }
+
+    const imagePaths = (products || [])
+      .map((product) => getStoragePathFromUrl(product.image))
+      .filter(Boolean);
+
+    const deletions = [
+      await deleteAllRows('order_items'),
+      await deleteAllRows('payments'),
+      await deleteAllRows('orders'),
+      await deleteAllRows('cart_items'),
+      await deleteAllRows('products')
+    ];
+
+    const deletionError = deletions.find(result => result?.error);
+    if (deletionError?.error) {
+      setStatus(`Failed to delete data: ${deletionError.error.message}`, 'error');
+      resetBtn.disabled = false;
+      return;
+    }
+
+    await deleteImages(imagePaths);
+
+    setStatus('All data has been reset.', 'success');
+    confirmInput.value = '';
+    resetBtn.disabled = true;
+  }
+
+  if (confirmInput && resetBtn) {
+    confirmInput.addEventListener('input', () => {
+      resetBtn.disabled = confirmInput.value.trim().toUpperCase() !== 'RESET';
+    });
+  }
+
+  if (resetBtn) {
+    resetBtn.addEventListener('click', handleReset);
+  }
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', (event) => {
+      event.preventDefault();
+      localStorage.removeItem('loginInfo');
+      sessionStorage.removeItem('loginInfo');
+      window.location.href = 'login.html';
+    });
+  }
+
+  const menuToggle = document.getElementById('menuToggle');
+  const navOverlay = document.getElementById('navOverlay');
+
+  function setNavOpen(open) {
+    document.body.classList.toggle('nav-open', open);
+  }
+
+  if (menuToggle) {
+    menuToggle.addEventListener('click', () => {
+      setNavOpen(!document.body.classList.contains('nav-open'));
+    });
+  }
+
+  if (navOverlay) {
+    navOverlay.addEventListener('click', () => setNavOpen(false));
+  }
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') setNavOpen(false);
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 900) setNavOpen(false);
+  });
+</script>
+</body>
+</html>
