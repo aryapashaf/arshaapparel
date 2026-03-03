@@ -447,6 +447,9 @@
   };
 
   function tr(key) {
+    var latestLang = localStorage.getItem('siteLanguage') || 'en';
+    if (supported.indexOf(latestLang) === -1) latestLang = 'en';
+    if (latestLang !== lang) lang = latestLang;
     return (T[lang] && T[lang][key]) || T.en[key] || key;
   }
 
@@ -537,6 +540,15 @@
     setText('#categorySelect option[value="socks"]', 'cat_socks');
     setText('#categorySelect option[value="sandals"]', 'cat_sandals');
     setText('#categorySelect option[value="pants"]', 'cat_pants');
+    setText('#categoryDropdown .category-option[data-value="all"]', 'all_category');
+    setText('#categoryDropdown .category-option[data-value="shirt"]', 'cat_shirt');
+    setText('#categoryDropdown .category-option[data-value="t-shirt"]', 'cat_t_shirt');
+    setText('#categoryDropdown .category-option[data-value="jacket"]', 'cat_jacket');
+    setText('#categoryDropdown .category-option[data-value="hoodie"]', 'cat_hoodie');
+    setText('#categoryDropdown .category-option[data-value="shoes"]', 'cat_shoes');
+    setText('#categoryDropdown .category-option[data-value="socks"]', 'cat_socks');
+    setText('#categoryDropdown .category-option[data-value="sandals"]', 'cat_sandals');
+    setText('#categoryDropdown .category-option[data-value="pants"]', 'cat_pants');
     setMany('.btn-add-cart', 'add_to_cart');
   }
 
