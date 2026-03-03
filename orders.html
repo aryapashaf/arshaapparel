@@ -66,6 +66,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
 <script src="supabase-init.js"></script>
+<script src="currency-converter.js"></script>
 <script>
   const ordersBody = document.getElementById('ordersBody');
   const logoutBtn = document.getElementById('logoutBtn');
@@ -86,11 +87,17 @@
     window.location.href = 'index.html';
   }
 
-  const idrFormatter = new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0
-  });
+  function formatPrice(value) {
+    const number = Number(value);
+    if (Number.isNaN(number)) {
+      return (window.currencyService && window.currencyService.formatFromIDR)
+        ? window.currencyService.formatFromIDR(0)
+        : '0';
+    }
+    return (window.currencyService && window.currencyService.formatFromIDR)
+      ? window.currencyService.formatFromIDR(number)
+      : number;
+  }
 
   function renderOrders(items) {
     if (!ordersBody) return;
@@ -109,7 +116,7 @@
         <td>${item.order?.user_name || item.order?.user_id || 'User'}</td>
         <td>${item.product_name || '-'}</td>
         <td>${item.quantity}</td>
-        <td>${idrFormatter.format(item.price || 0)}</td>
+        <td>${formatPrice(item.price || 0)}</td>
         <td>
           <div class="order-img" ${item.product_image ? `style="background-image: url('${item.product_image}');"` : ''}></div>
         </td>
@@ -140,6 +147,8 @@
       .on('postgres_changes', { event: '*', schema: 'public', table: 'order_items' }, fetchOrders)
       .subscribe();
   }
+
+  window.addEventListener('currency:updated', fetchOrders);
 
   if (logoutBtn) {
     logoutBtn.addEventListener('click', (event) => {

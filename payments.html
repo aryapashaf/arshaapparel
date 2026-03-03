@@ -66,6 +66,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
 <script src="supabase-init.js"></script>
+<script src="currency-converter.js"></script>
 <script>
   const paymentsBody = document.getElementById('paymentsBody');
   const logoutBtn = document.getElementById('logoutBtn');
@@ -86,11 +87,17 @@
     window.location.href = 'index.html';
   }
 
-  const idrFormatter = new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0
-  });
+  function formatPrice(value) {
+    const number = Number(value);
+    if (Number.isNaN(number)) {
+      return (window.currencyService && window.currencyService.formatFromIDR)
+        ? window.currencyService.formatFromIDR(0)
+        : '0';
+    }
+    return (window.currencyService && window.currencyService.formatFromIDR)
+      ? window.currencyService.formatFromIDR(number)
+      : number;
+  }
 
   function renderPayments(items) {
     if (!paymentsBody) return;
@@ -107,7 +114,7 @@
     paymentsBody.innerHTML = items.map(item => `
       <tr>
         <td>${item.user_name || item.user_id || 'User'}</td>
-        <td>${idrFormatter.format(item.total || 0)}</td>
+        <td>${formatPrice(item.total || 0)}</td>
         <td><span class="badge ${item.status === 'paid' ? 'success' : 'warning'}">${item.status || 'pending'}</span></td>
         <td>${item.order_id || '-'}</td>
         <td>${new Date(item.created_at).toLocaleDateString('id-ID')}</td>
@@ -137,6 +144,8 @@
       .on('postgres_changes', { event: '*', schema: 'public', table: 'payments' }, fetchPayments)
       .subscribe();
   }
+
+  window.addEventListener('currency:updated', fetchPayments);
 
   if (logoutBtn) {
     logoutBtn.addEventListener('click', (event) => {

@@ -73,6 +73,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="supabase-init.js"></script>
+  <script src="currency-converter.js"></script>
   <script>
     const cartItems = document.getElementById('cartItems');
     const subtotalValue = document.getElementById('subtotalValue');
@@ -110,12 +111,6 @@
       }
     }
 
-    const idrFormatter = new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0
-    });
-
     function showCartAlert(message) {
       if (!cartAlert) return;
       cartAlert.textContent = message;
@@ -128,16 +123,22 @@
 
     function formatPrice(value) {
       const number = Number(value);
-      if (Number.isNaN(number)) return idrFormatter.format(0);
-      return idrFormatter.format(number);
+      if (Number.isNaN(number)) {
+        return (window.currencyService && window.currencyService.formatFromIDR)
+          ? window.currencyService.formatFromIDR(0)
+          : '0';
+      }
+      return (window.currencyService && window.currencyService.formatFromIDR)
+        ? window.currencyService.formatFromIDR(number)
+        : number;
     }
 
     function renderCart(items) {
       if (!cartItems) return;
       if (!items || items.length === 0) {
         cartItems.innerHTML = '<div class="cart-empty">Your cart is empty.</div>';
-        subtotalValue.textContent = idrFormatter.format(0);
-        totalValue.textContent = idrFormatter.format(0);
+        subtotalValue.textContent = formatPrice(0);
+        totalValue.textContent = formatPrice(0);
         return;
       }
 
@@ -193,8 +194,8 @@
       const userId = getUserId();
       if (!userId) {
         cartItems.innerHTML = '<div class="cart-empty">Please login to see your cart.</div>';
-        subtotalValue.textContent = idrFormatter.format(0);
-        totalValue.textContent = idrFormatter.format(0);
+        subtotalValue.textContent = formatPrice(0);
+        totalValue.textContent = formatPrice(0);
         return;
       }
       const { data, error } = await supabaseClient
@@ -467,6 +468,8 @@
     if (checkoutBtn) {
       checkoutBtn.addEventListener('click', checkout);
     }
+
+    window.addEventListener('currency:updated', applySearch);
   </script>
   <script src="i18n-global.js"></script>
   <script src="loading-indicator.js"></script>

@@ -184,6 +184,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
 <script src="supabase-init.js"></script>
+<script src="currency-converter.js"></script>
 <script>
   const productsBody = document.getElementById('productsBody');
   const supabaseClient = window.supabaseClient;
@@ -242,16 +243,12 @@
     return message;
   }
 
-  const idrFormatter = new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0
-  });
-
   function formatPrice(value) {
     const number = Number(value);
     if (Number.isNaN(number)) return value || '-';
-    return idrFormatter.format(number);
+    return (window.currencyService && window.currencyService.formatFromIDR)
+      ? window.currencyService.formatFromIDR(number)
+      : number;
   }
 
   function statusClass(status) {
@@ -479,6 +476,8 @@
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, fetchProducts)
       .subscribe();
   }
+
+  window.addEventListener('currency:updated', fetchProducts);
 
   if (addButton) {
     addButton.addEventListener('click', () => openModal('add'));

@@ -92,6 +92,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
 <script src="supabase-init.js"></script>
+<script src="currency-converter.js"></script>
 <script>
   const stored = localStorage.getItem('loginInfo') || sessionStorage.getItem('loginInfo');
   const welcomeText = document.getElementById('welcomeText');
@@ -129,16 +130,12 @@
     window.location.href = 'login.html';
   });
 
-  const idrFormatter = new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0
-  });
-
   function formatPrice(value) {
     const number = Number(value);
     if (Number.isNaN(number)) return value || '-';
-    return idrFormatter.format(number);
+    return (window.currencyService && window.currencyService.formatFromIDR)
+      ? window.currencyService.formatFromIDR(number)
+      : number;
   }
 
   function statusClass(status) {
@@ -215,6 +212,8 @@
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, fetchDashboardProducts)
       .subscribe();
   }
+
+  window.addEventListener('currency:updated', fetchDashboardProducts);
 
   const menuToggle = document.getElementById('menuToggle');
   const navOverlay = document.getElementById('navOverlay');

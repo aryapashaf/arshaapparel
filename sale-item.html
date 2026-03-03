@@ -98,6 +98,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="supabase-init.js"></script>
+  <script src="currency-converter.js"></script>
   <script>
     const productGrid = document.getElementById('productGrid');
     const searchInput = document.getElementById('searchInput');
@@ -113,16 +114,16 @@
     const backLink = document.querySelector('.back-logo');
     let allProducts = [];
 
-    const idrFormatter = new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0
-    });
-
     function formatPrice(value) {
       const number = Number(value);
-      if (Number.isNaN(number)) return idrFormatter.format(0);
-      return idrFormatter.format(number);
+      if (Number.isNaN(number)) {
+        return (window.currencyService && window.currencyService.formatFromIDR)
+          ? window.currencyService.formatFromIDR(0)
+          : '0';
+      }
+      return (window.currencyService && window.currencyService.formatFromIDR)
+        ? window.currencyService.formatFromIDR(number)
+        : number;
     }
 
     function renderProducts(items) {
@@ -230,6 +231,8 @@
         .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, fetchProducts)
         .subscribe();
     }
+
+    window.addEventListener('currency:updated', applyFilters);
 
     if (searchInput) {
       searchInput.addEventListener('input', applyFilters);
