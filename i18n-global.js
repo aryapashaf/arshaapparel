@@ -481,17 +481,22 @@
 
   function setText(selector, key) {
     var el = document.querySelector(selector);
-    if (el) el.textContent = tr(key);
+    if (!el) return;
+    var next = tr(key);
+    if (el.textContent !== next) el.textContent = next;
   }
 
   function setAttr(selector, attr, key) {
     var el = document.querySelector(selector);
-    if (el) el.setAttribute(attr, tr(key));
+    if (!el) return;
+    var next = tr(key);
+    if (el.getAttribute(attr) !== next) el.setAttribute(attr, next);
   }
 
   function setMany(selector, key) {
+    var next = tr(key);
     document.querySelectorAll(selector).forEach(function (el) {
-      el.textContent = tr(key);
+      if (el.textContent !== next) el.textContent = next;
     });
   }
 
@@ -736,14 +741,24 @@
   }
 
 
+  var applyingDynamic = false;
   function applyDynamic() {
+    if (applyingDynamic) return;
+    applyingDynamic = true;
     setMany('.btn-add-cart', 'add_to_cart');
     setMany('.btn-secondary[data-product-id]', 'add_to_cart');
+    applyingDynamic = false;
   }
 
   function observeDynamic() {
+    var scheduled = false;
     var observer = new MutationObserver(function () {
-      applyDynamic();
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(function () {
+        scheduled = false;
+        applyDynamic();
+      });
     });
     observer.observe(document.body, { childList: true, subtree: true });
   }
