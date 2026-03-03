@@ -1,0 +1,729 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ArshaApparel</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <div class="logo">ArshaApparel</div>
+    </div>
+
+    <div class="nav-actions">
+      <a class="icon-btn cart-mobile" href="cart.html" aria-label="Cart">
+        &#128722;
+        <span class="cart-badge" id="cartBadgeMobile" aria-hidden="true"></span>
+      </a>
+      <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-controls="navDrawer" aria-expanded="false">
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+      </button>
+    </div>
+
+    <div class="nav-drawer" id="navDrawer">
+      <div class="nav-drawer-inner">
+        <div class="nav-center">
+          <a href="#" id="navHome">Home</a>
+          <a href="sale-item.html" id="navProducts">Products</a>
+          <a href="#categories" id="navCategories">Categories</a>
+        </div>
+
+        <div class="nav-right">
+          <a class="icon-btn" href="cart.html" aria-label="Cart">
+            &#128722;
+            <span class="cart-badge" id="cartBadge" aria-hidden="true"></span>
+          </a>
+          <div class="lang-menu" id="langMenu">
+            <button class="lang-btn" id="langBtn" type="button" aria-label="Change language" aria-expanded="false">
+              <img class="lang-flag" id="langFlag" src="https://flagcdn.com/w20/gb.png" alt="EN">
+              <span class="lang-code" id="langCode">EN</span>
+              <span class="lang-caret" aria-hidden="true"></span>
+            </button>
+            <div class="lang-dropdown" id="langDropdown" role="menu" aria-hidden="true">
+              <button class="lang-option" type="button" data-lang="en"><img class="lang-flag" src="https://flagcdn.com/w20/gb.png" alt="EN"><span class="lang-option-code">EN</span><span class="lang-option-label">English</span></button>
+              <button class="lang-option" type="button" data-lang="id"><img class="lang-flag" src="https://flagcdn.com/w20/id.png" alt="ID"><span class="lang-option-code">ID</span><span class="lang-option-label">Indonesia</span></button>
+              <button class="lang-option" type="button" data-lang="zh"><img class="lang-flag" src="https://flagcdn.com/w20/cn.png" alt="CN"><span class="lang-option-code">CN</span><span class="lang-option-label">Chinese</span></button>
+              <button class="lang-option" type="button" data-lang="ar"><img class="lang-flag" src="https://flagcdn.com/w20/sa.png" alt="AR"><span class="lang-option-code">AR</span><span class="lang-option-label">Arabic</span></button>
+              <button class="lang-option" type="button" data-lang="de"><img class="lang-flag" src="https://flagcdn.com/w20/de.png" alt="DE"><span class="lang-option-code">DE</span><span class="lang-option-label">German</span></button>
+            </div>
+          </div>
+          <a href="login.html" class="btn-login" id="loginLink">Login</a>
+          <div class="profile-menu" id="profileMenu">
+            <button class="profile-btn" id="profileBtn" type="button">
+              <span class="profile-avatar" id="profileAvatar">U</span>
+              <span class="profile-name" id="profileName">User</span>
+            </button>
+            <div class="profile-dropdown" id="profileDropdown">
+              <a href="dashboard.html" id="dashboardLink">Dashboard</a>
+              <a href="#" id="settingsLink">Settings</a>
+              <button type="button" id="logoutBtn">Logout</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div class="nav-overlay" id="navOverlay"></div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1 id="heroTitle">Premium Products, Minimal Experience</h1>
+    <p id="heroDesc">Discover curated products with a clean and elegant shopping experience.</p>
+    <a href="#featured" class="btn-primary" id="heroShopNow">Shop Now</a>
+  </section>
+
+  <!-- FEATURED PRODUCTS -->
+  <section class="section" id="featured">
+    <h2 class="section-title" id="featuredTitle">Featured Products</h2>
+
+    <div class="product-grid" id="featuredGrid">
+      <div class="product-card">
+        <div class="product-img"></div>
+        <h3>Loading products...</h3>
+        <span>--</span>
+        <button class="btn-secondary" disabled>Loading</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHOP BY CATEGORIES -->
+  <section class="section" id="categories">
+    <h2 class="section-title" id="categoriesTitle">Shop by Categories</h2>
+
+    <div class="categories-track">
+      <div class="category-card">
+        <div class="category-icon">T</div>
+        <h3>T-shirt</h3>
+        <p>Everyday staples built for comfort.</p>
+        <a class="btn-ghost category-shop-now" href="sale-item.html?category=t-shirt">Shop Now</a>
+      </div>
+      <div class="category-card">
+        <div class="category-icon">S</div>
+        <h3>Shirt</h3>
+        <p>Smart casual pieces for every mood.</p>
+        <a class="btn-ghost category-shop-now" href="sale-item.html?category=shirt">Shop Now</a>
+      </div>
+      <div class="category-card">
+        <div class="category-icon">J</div>
+        <h3>Jacket</h3>
+        <p>Layered warmth with sleek silhouettes.</p>
+        <a class="btn-ghost category-shop-now" href="sale-item.html?category=jacket">Shop Now</a>
+      </div>
+      <div class="category-card">
+        <div class="category-icon">H</div>
+        <h3>Hoodie</h3>
+        <p>Soft essentials for off-duty days.</p>
+        <a class="btn-ghost category-shop-now" href="sale-item.html?category=hoodie">Shop Now</a>
+      </div>
+      <div class="category-card">
+        <div class="category-icon">SH</div>
+        <h3>Shoes</h3>
+        <p>Step into refined everyday comfort.</p>
+        <a class="btn-ghost category-shop-now" href="sale-item.html?category=shoes">Shop Now</a>
+      </div>
+      <div class="category-card">
+        <div class="category-icon">SA</div>
+        <h3>Sandals</h3>
+        <p>Minimal looks for warm-weather days.</p>
+        <a class="btn-ghost category-shop-now" href="sale-item.html?category=sandals">Shop Now</a>
+      </div>
+      <div class="category-card">
+        <div class="category-icon">SO</div>
+        <h3>Socks</h3>
+        <p>Comfort details that finish the fit.</p>
+        <a class="btn-ghost category-shop-now" href="sale-item.html?category=socks">Shop Now</a>
+      </div>
+      <div class="category-card">
+        <div class="category-icon">P</div>
+        <h3>Pants</h3>
+        <p>Tailored fits with clean lines.</p>
+        <a class="btn-ghost category-shop-now" href="sale-item.html?category=pants">Shop Now</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROMO SLIDER -->
+  <section class="promo-slider" aria-label="Promotional banner slider">
+    <div class="promo-viewport">
+      <div class="promo-track">
+        <div class="promo-slide">
+          <img src="assets-promo/promo-hoodie.png" alt="Promo banner hoodie">
+        </div>
+        <div class="promo-slide">
+          <img src="assets-promo/promo-kemeja.png" alt="Promo banner shirt">
+        </div>
+        <div class="promo-slide">
+          <img src="assets-promo/promo-sepatu.png" alt="Promo banner shoes">
+        </div>
+      </div>
+    </div>
+    <div class="promo-dots" aria-label="Promo slide controls"></div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p id="footerText">Arya Pasha© 2026 ArshaApparel. All rights reserved.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-init.js"></script>
+  <script>
+    const profileMenu = document.getElementById('profileMenu');
+    const profileBtn = document.getElementById('profileBtn');
+    const profileName = document.getElementById('profileName');
+    const profileAvatar = document.getElementById('profileAvatar');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const settingsLink = document.getElementById('settingsLink');
+    const dashboardLink = document.getElementById('dashboardLink');
+    const loginLink = document.getElementById('loginLink');
+    const navToggle = document.getElementById('navToggle');
+    const navOverlay = document.getElementById('navOverlay');
+    const navDrawer = document.getElementById('navDrawer');
+    const langMenu = document.getElementById('langMenu');
+    const langBtn = document.getElementById('langBtn');
+    const langDropdown = document.getElementById('langDropdown');
+    const langFlag = document.getElementById('langFlag');
+    const langCode = document.getElementById('langCode');
+
+
+    const LANGUAGE_OPTIONS = {
+      en: { code: 'EN', flag: 'https://flagcdn.com/w20/gb.png', label: 'English' },
+      id: { code: 'ID', flag: 'https://flagcdn.com/w20/id.png', label: 'Indonesia' },
+      zh: { code: 'CN', flag: 'https://flagcdn.com/w20/cn.png', label: 'Chinese' },
+      ar: { code: 'AR', flag: 'https://flagcdn.com/w20/sa.png', label: 'Arabic' },
+      de: { code: 'DE', flag: 'https://flagcdn.com/w20/de.png', label: 'German' }
+    };
+
+    const DICTIONARY = {
+      en: {
+        navHome: 'Home', navProducts: 'Products', navCategories: 'Categories', login: 'Login',
+        heroTitle: 'Premium Products, Minimal Experience',
+        heroDesc: 'Discover curated products with a clean and elegant shopping experience.',
+        shopNow: 'Shop Now', featuredTitle: 'Featured Products', categoriesTitle: 'Shop by Categories',
+        addToCart: 'Add to Cart', unavailable: 'Unavailable', noProducts: 'No products yet',
+        footer: 'Arya Pasha© 2026 ArshaApparel. All rights reserved.'
+      },
+      id: {
+        navHome: 'Beranda', navProducts: 'Produk', navCategories: 'Kategori', login: 'Masuk',
+        heroTitle: 'Produk Premium, Pengalaman Minimalis',
+        heroDesc: 'Temukan produk pilihan dengan pengalaman belanja yang bersih dan elegan.',
+        shopNow: 'Belanja Sekarang', featuredTitle: 'Produk Unggulan', categoriesTitle: 'Belanja Berdasarkan Kategori',
+        addToCart: 'Tambah ke Keranjang', unavailable: 'Tidak Tersedia', noProducts: 'Belum ada produk',
+        footer: 'Arya Pasha© 2026 ArshaApparel. Semua hak dilindungi.'
+      },
+      zh: {
+        navHome: '\u4E3B\u9875', navProducts: '\u4EA7\u54C1', navCategories: '\u5206\u7C7B', login: '\u767B\u5F55',
+        heroTitle: '\u7CBE\u9009\u5546\u54C1\uFF0C\u6781\u7B80\u4F53\u9A8C',
+        heroDesc: '\u63A2\u7D22\u7CBE\u9009\u5546\u54C1\uFF0C\u4EAB\u53D7\u7B80\u6D01\u4F18\u96C5\u7684\u8D2D\u7269\u4F53\u9A8C\u3002',
+        shopNow: '\u7ACB\u5373\u8D2D\u4E70', featuredTitle: '\u7CBE\u9009\u5546\u54C1', categoriesTitle: '\u6309\u5206\u7C7B\u9009\u8D2D',
+        addToCart: '\u52A0\u5165\u8D2D\u7269\u8F66', unavailable: '\u6682\u65E0', noProducts: '\u6682\u65E0\u5546\u54C1',
+        footer: 'Arya Pasha© 2026 ArshaApparel\u3002\u4FDD\u7559\u6240\u6709\u6743\u5229\u3002'
+      },
+      ar: {
+        navHome: '\u0627\u0644\u0631\u0626\u064A\u0633\u064A\u0629', navProducts: '\u0627\u0644\u0645\u0646\u062A\u062C\u0627\u062A', navCategories: '\u0627\u0644\u0641\u0626\u0627\u062A', login: '\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644',
+        heroTitle: '\u0645\u0646\u062A\u062C\u0627\u062A \u0645\u0645\u064A\u0632\u0629 \u0648\u062A\u062C\u0631\u0628\u0629 \u0628\u0633\u064A\u0637\u0629',
+        heroDesc: '\u0627\u0643\u062A\u0634\u0641 \u0645\u0646\u062A\u062C\u0627\u062A \u0645\u062E\u062A\u0627\u0631\u0629 \u0645\u0639 \u062A\u062C\u0631\u0628\u0629 \u062A\u0633\u0648\u0642 \u0646\u0638\u064A\u0641\u0629 \u0648\u0623\u0646\u064A\u0642\u0629\u002E',
+        shopNow: '\u062A\u0633\u0648\u0642 \u0627\u0644\u0622\u0646', featuredTitle: '\u0627\u0644\u0645\u0646\u062A\u062C\u0627\u062A \u0627\u0644\u0645\u0645\u064A\u0632\u0629', categoriesTitle: '\u062A\u0633\u0648\u0642 \u062D\u0633\u0628 \u0627\u0644\u0641\u0626\u0627\u062A',
+        addToCart: '\u0623\u0636\u0641 \u0625\u0644\u0649 \u0627\u0644\u0633\u0644\u0629', unavailable: '\u063A\u064A\u0631 \u0645\u062A\u0627\u062D', noProducts: '\u0644\u0627 \u062A\u0648\u062C\u062F \u0645\u0646\u062A\u062C\u0627\u062A \u0628\u0639\u062F',
+        footer: 'Arya Pasha© 2026 ArshaApparel. \u062C\u0645\u064A\u0639 \u0627\u0644\u062D\u0642\u0648\u0642 \u0645\u062D\u0641\u0648\u0638\u0629\u002E'
+      },
+      de: {
+        navHome: 'Start', navProducts: 'Produkte', navCategories: 'Kategorien', login: 'Anmelden',
+        heroTitle: 'Premium-Produkte, minimalistisches Erlebnis',
+        heroDesc: 'Entdecke kuratierte Produkte mit einem klaren und eleganten Einkaufserlebnis.',
+        shopNow: 'Jetzt einkaufen', featuredTitle: 'Empfohlene Produkte', categoriesTitle: 'Nach Kategorien einkaufen',
+        addToCart: 'In den Warenkorb', unavailable: 'Nicht verfügbar', noProducts: 'Noch keine Produkte',
+        footer: 'Arya Pasha© 2026 ArshaApparel. Alle Rechte vorbehalten.'
+      }
+    };
+
+    let currentLanguage = localStorage.getItem('siteLanguage') || 'en';
+    if (!LANGUAGE_OPTIONS[currentLanguage]) currentLanguage = 'en';
+
+    function t(key) {
+      return (DICTIONARY[currentLanguage] && DICTIONARY[currentLanguage][key]) || DICTIONARY.en[key] || key;
+    }
+
+    function setLanguageMenuOpen(open) {
+      if (!langMenu || !langBtn || !langDropdown) return;
+      langMenu.classList.toggle('open', open);
+      langBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      langDropdown.setAttribute('aria-hidden', open ? 'false' : 'true');
+    }
+
+    function updateLanguageButton() {
+      const language = LANGUAGE_OPTIONS[currentLanguage] || LANGUAGE_OPTIONS.en;
+      if (langFlag) { langFlag.src = language.flag; langFlag.alt = language.code; }
+      if (langCode) langCode.textContent = language.code;
+      document.documentElement.lang = currentLanguage;
+      document.documentElement.setAttribute('dir', 'ltr');
+      document.body.classList.toggle('lang-rtl', currentLanguage === 'ar');
+      if (langDropdown) {
+        langDropdown.querySelectorAll('.lang-option').forEach((option) => {
+          const meta = LANGUAGE_OPTIONS[option.dataset.lang];
+          const flagNode = option.querySelector('.lang-flag');
+          const labelNode = option.querySelector('.lang-option-label');
+          if (meta && flagNode) { flagNode.src = meta.flag; flagNode.alt = meta.code; }
+          if (meta && labelNode) labelNode.textContent = meta.label;
+          option.classList.toggle('is-active', option.dataset.lang === currentLanguage);
+        });
+      }
+    }
+
+    function applyTranslations() {
+      const navHome = document.getElementById('navHome');
+      const navProducts = document.getElementById('navProducts');
+      const navCategories = document.getElementById('navCategories');
+      const heroTitle = document.getElementById('heroTitle');
+      const heroDesc = document.getElementById('heroDesc');
+      const heroShopNow = document.getElementById('heroShopNow');
+      const featuredTitle = document.getElementById('featuredTitle');
+      const categoriesTitle = document.getElementById('categoriesTitle');
+      const footerText = document.getElementById('footerText');
+      const categoryButtons = document.querySelectorAll('.category-shop-now');
+
+      if (navHome) navHome.textContent = t('navHome');
+      if (navProducts) navProducts.textContent = t('navProducts');
+      if (navCategories) navCategories.textContent = t('navCategories');
+      if (loginLink) loginLink.textContent = t('login');
+      if (heroTitle) heroTitle.textContent = t('heroTitle');
+      if (heroDesc) heroDesc.textContent = t('heroDesc');
+      if (heroShopNow) heroShopNow.textContent = t('shopNow');
+      if (featuredTitle) featuredTitle.textContent = t('featuredTitle');
+      if (categoriesTitle) categoriesTitle.textContent = t('categoriesTitle');
+      if (footerText) footerText.textContent = t('footer');
+      categoryButtons.forEach((button) => {
+        button.textContent = t('shopNow');
+      });
+      document.querySelectorAll('.btn-secondary').forEach((button) => {
+        if (!button.dataset.productId) {
+          button.textContent = t('unavailable');
+        } else {
+          button.textContent = t('addToCart');
+        }
+      });
+    }
+
+    if (langBtn) {
+      langBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        setLanguageMenuOpen(!langMenu.classList.contains('open'));
+      });
+    }
+
+    if (langDropdown) {
+      langDropdown.addEventListener('click', (event) => {
+        const option = event.target.closest('.lang-option');
+        if (!option) return;
+        const nextLang = option.dataset.lang;
+        if (!LANGUAGE_OPTIONS[nextLang]) return;
+        currentLanguage = nextLang;
+        localStorage.setItem('siteLanguage', currentLanguage);
+        updateLanguageButton();
+        applyTranslations();
+        setLanguageMenuOpen(false);
+      });
+    }
+    function getLoginInfo() {
+      const stored = localStorage.getItem('loginInfo') || sessionStorage.getItem('loginInfo');
+      if (!stored) return null;
+      try {
+        return JSON.parse(stored);
+      } catch (error) {
+        localStorage.removeItem('loginInfo');
+        sessionStorage.removeItem('loginInfo');
+        return null;
+      }
+    }
+
+    function updateProfileUI() {
+      const data = getLoginInfo();
+      const role = data?.role;
+      const isLoggedIn = Boolean(role);
+      profileMenu.style.display = isLoggedIn ? 'inline-flex' : 'none';
+      loginLink.style.display = isLoggedIn ? 'none' : 'inline-flex';
+
+      if (!isLoggedIn) {
+        return;
+      }
+
+      const name = data?.name || (data?.email ? data.email.split('@')[0] : (role === 'admin' ? 'Admin' : 'User'));
+      profileName.textContent = name;
+      profileAvatar.textContent = name.trim().charAt(0).toUpperCase() || (role === 'admin' ? 'A' : 'U');
+      settingsLink.href = '#';
+      dashboardLink.style.display = role === 'admin' ? 'block' : 'none';
+    }
+
+    profileBtn.addEventListener('click', () => {
+      profileMenu.classList.toggle('open');
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!profileMenu.contains(event.target)) {
+        profileMenu.classList.remove('open');
+      }
+      if (langMenu && !langMenu.contains(event.target)) {
+        setLanguageMenuOpen(false);
+      }
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('loginInfo');
+      sessionStorage.removeItem('loginInfo');
+      profileMenu.classList.remove('open');
+      updateProfileUI();
+      cartBadges.forEach((badge) => {
+        badge.style.display = 'none';
+      });
+    });
+
+    updateProfileUI();
+    updateLanguageButton();
+    applyTranslations();
+
+    function setNavOpen(open) {
+      document.body.classList.toggle('nav-open', open);
+      if (navToggle) {
+        navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+    }
+
+    if (navToggle) {
+      navToggle.addEventListener('click', () => {
+        setNavOpen(!document.body.classList.contains('nav-open'));
+      });
+    }
+
+    if (navOverlay) {
+      navOverlay.addEventListener('click', () => setNavOpen(false));
+    }
+
+    if (navDrawer) {
+      navDrawer.addEventListener('click', (event) => {
+        if (event.target.closest('a')) {
+          setNavOpen(false);
+        }
+      });
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        setNavOpen(false);
+        setLanguageMenuOpen(false);
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 820) {
+        setNavOpen(false);
+      }
+    });
+
+    const featuredGrid = document.getElementById('featuredGrid');
+    const supabaseClient = window.supabaseClient;
+
+    const idrFormatter = new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0
+    });
+
+    function formatPrice(value) {
+      const number = Number(value);
+      if (Number.isNaN(number)) return value || '-';
+      return idrFormatter.format(number);
+    }
+
+    function renderFeatured(products) {
+      if (!featuredGrid) return;
+      if (!products || products.length === 0) {
+        featuredGrid.innerHTML = `
+          <div class="product-card">
+            <div class="product-img"></div>
+            <h3>${t('noProducts')}</h3>
+            <span>--</span>
+            <button class="btn-secondary" disabled>${t('unavailable')}</button>
+          </div>
+        `;
+        return;
+      }
+
+      featuredGrid.innerHTML = products.map(product => `
+        <div class="product-card">
+          <div class="product-img" ${product.image ? `style="background-image: url('${product.image}');"` : ''}></div>
+          <h3>${product.name}</h3>
+          <span>${formatPrice(product.price)}</span>
+          <button class="btn-secondary" type="button" data-product-id="${product.id}">${t('addToCart')}</button>
+        </div>
+      `).join('');
+    }
+
+    async function fetchFeatured() {
+      if (!supabaseClient) return;
+      const { data, error } = await supabaseClient
+        .from('products')
+        .select('id, name, price, image, status')
+        .neq('status', 'draft')
+        .order('created_at', { ascending: false })
+        .limit(4);
+
+      if (error) {
+        console.warn('Failed to load products', error.message);
+        return;
+      }
+
+      renderFeatured(data);
+    }
+
+    if (supabaseClient && featuredGrid) {
+      fetchFeatured();
+      supabaseClient
+        .channel('public:products')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, fetchFeatured)
+        .subscribe();
+    }
+
+    function getUserId() {
+      const data = getLoginInfo();
+      if (!data || data.role !== 'user') return null;
+      return data.email || data.name || null;
+    }
+
+    const cartBadges = [
+      document.getElementById('cartBadge'),
+      document.getElementById('cartBadgeMobile')
+    ].filter(Boolean);
+
+    function setCartBadge(count) {
+      if (cartBadges.length === 0) return;
+      cartBadges.forEach((badge) => {
+        if (count > 0) {
+          badge.textContent = count > 99 ? '99+' : String(count);
+          badge.style.display = 'inline-flex';
+        } else {
+          badge.style.display = 'none';
+        }
+      });
+    }
+
+    async function fetchCartCount() {
+      if (!supabaseClient || cartBadges.length === 0) return;
+      const userId = getUserId();
+      if (!userId) {
+        setCartBadge(0);
+        return;
+      }
+      const { data, error } = await supabaseClient
+        .from('cart_items')
+        .select('quantity, product:products(status)')
+        .eq('user_id', userId);
+
+      if (error) {
+        console.warn('Failed to load cart count', error.message);
+        return;
+      }
+      const count = (data || []).reduce((sum, item) => {
+        if (item.product?.status === 'draft') return sum;
+        return sum + (item.quantity || 0);
+      }, 0);
+      setCartBadge(count);
+    }
+
+    async function addToCart(productId) {
+      if (!supabaseClient || !productId) return;
+      const userId = getUserId();
+      if (!userId) {
+        window.location.href = 'login.html';
+        return;
+      }
+      const { data: productData, error: productError } = await supabaseClient
+        .from('products')
+        .select('stock, status')
+        .eq('id', productId)
+        .maybeSingle();
+
+      if (productError) {
+        console.warn('Failed to load product stock', productError.message);
+        return;
+      }
+      if (productData?.status === 'draft') {
+        return;
+      }
+      const { data, error } = await supabaseClient
+        .from('cart_items')
+        .select('id, quantity')
+        .eq('user_id', userId)
+        .eq('product_id', productId)
+        .maybeSingle();
+
+      if (error && error.code !== 'PGRST116') {
+        console.warn('Failed to check cart', error.message);
+        return;
+      }
+
+      if (data?.id) {
+        const next = data.quantity + 1;
+        const stock = productData?.stock;
+        if (typeof stock === 'number' && next > stock) {
+          const trf = window.__i18nTrf || ((_, params) => `Stok produk tidak cukup. Maksimal ${params.stock}.`);
+          alert(trf('stock_max', { stock }));
+          return;
+        }
+        const { error: updateError } = await supabaseClient
+          .from('cart_items')
+          .update({ quantity: next })
+          .eq('id', data.id);
+        if (updateError) {
+          console.warn('Failed to update cart', updateError.message);
+        }
+        return;
+      }
+
+      const stock = productData?.stock;
+      if (typeof stock === 'number' && stock < 1) {
+        const tr = window.__i18nTr || (() => 'Stok produk tidak cukup.');
+        alert(tr('stock_not_enough'));
+        return;
+      }
+
+      const { error: insertError } = await supabaseClient
+        .from('cart_items')
+        .insert({ user_id: userId, product_id: productId, quantity: 1 });
+
+      if (insertError) {
+        console.warn('Failed to add to cart', insertError.message);
+      }
+    }
+
+    if (featuredGrid) {
+      featuredGrid.addEventListener('click', (event) => {
+        const button = event.target.closest('.btn-secondary');
+        if (!button) return;
+        const productId = button.dataset.productId;
+        addToCart(productId);
+      });
+    }
+
+    if (supabaseClient && cartBadges.length > 0) {
+      const userId = getUserId();
+      if (userId) {
+        fetchCartCount();
+        supabaseClient
+          .channel(`public:cart_items:${userId}`)
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'cart_items', filter: `user_id=eq.${userId}` }, fetchCartCount)
+          .subscribe();
+      }
+    }
+
+    const promoViewport = document.querySelector('.promo-viewport');
+    const promoSlides = Array.from(document.querySelectorAll('.promo-slide'));
+    const promoDotsWrap = document.querySelector('.promo-dots');
+    const promoCount = promoSlides.length;
+    let promoIndex = 0;
+    let promoTimer = null;
+    let promoResumeTimer = null;
+
+    function getSlideWidth() {
+      return promoViewport ? promoViewport.clientWidth : 0;
+    }
+
+    function updatePromoDots() {
+      if (!promoDotsWrap) return;
+      const dots = promoDotsWrap.querySelectorAll('.promo-dot');
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('is-active', index === promoIndex);
+      });
+    }
+
+    function goToPromo(index, behavior = 'smooth') {
+      if (!promoViewport || promoCount < 1) return;
+      promoIndex = (index + promoCount) % promoCount;
+      promoViewport.scrollTo({ left: promoIndex * getSlideWidth(), behavior });
+      updatePromoDots();
+    }
+
+    function clearPromoTimers() {
+      if (promoTimer) clearInterval(promoTimer);
+      if (promoResumeTimer) clearTimeout(promoResumeTimer);
+      promoTimer = null;
+      promoResumeTimer = null;
+    }
+
+    function startPromoAutoSlide() {
+      clearPromoTimers();
+      if (promoCount < 2) return;
+      promoTimer = setInterval(() => {
+        goToPromo(promoIndex + 1);
+      }, 3000);
+    }
+
+    function pausePromoAutoSlide() {
+      if (promoTimer) clearInterval(promoTimer);
+      promoTimer = null;
+      if (promoResumeTimer) clearTimeout(promoResumeTimer);
+      promoResumeTimer = setTimeout(startPromoAutoSlide, 4500);
+    }
+
+    if (promoViewport && promoCount > 0) {
+      if (promoDotsWrap) {
+        promoDotsWrap.innerHTML = promoSlides
+          .map((_, index) => `<button class="promo-dot${index === 0 ? ' is-active' : ''}" type="button" aria-label="Go to promo slide ${index + 1}"></button>`)
+          .join('');
+
+        promoDotsWrap.querySelectorAll('.promo-dot').forEach((dot, index) => {
+          dot.addEventListener('click', () => {
+            goToPromo(index);
+            pausePromoAutoSlide();
+          });
+        });
+      }
+
+      let promoScrollEnd;
+      promoViewport.addEventListener('scroll', () => {
+        clearTimeout(promoScrollEnd);
+        promoScrollEnd = setTimeout(() => {
+          const width = getSlideWidth();
+          if (!width) return;
+          promoIndex = Math.round(promoViewport.scrollLeft / width);
+          updatePromoDots();
+        }, 80);
+      });
+
+      promoViewport.addEventListener('touchstart', pausePromoAutoSlide, { passive: true });
+      promoViewport.addEventListener('mousedown', pausePromoAutoSlide);
+      promoViewport.addEventListener('mouseenter', pausePromoAutoSlide);
+      promoViewport.addEventListener('mouseleave', startPromoAutoSlide);
+      window.addEventListener('resize', () => goToPromo(promoIndex, 'auto'));
+
+      goToPromo(0, 'auto');
+      startPromoAutoSlide();
+    }
+  </script>
+  <script src="i18n-global.js"></script>
+  <script src="loading-indicator.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
