@@ -224,6 +224,7 @@
   let currentImageUrl = null;
   let previewObjectUrl = null;
   let removeImage = false;
+  let supportsDescription = true;
 
   function showFormAlert(message) {
     if (!formAlert) return;
@@ -313,10 +314,22 @@
 
   async function fetchProducts() {
     if (!supabaseClient) return;
-    const { data, error } = await supabaseClient
+    let query = supabaseClient
       .from('products')
       .select('id, name, description, price, category, status, stock')
       .order('created_at', { ascending: false });
+    let { data, error } = await query;
+
+    if (error && /description/i.test(String(error.message || ''))) {
+      supportsDescription = false;
+      ({ data, error } = await supabaseClient
+        .from('products')
+        .select('id, name, price, category, status, stock')
+        .order('created_at', { ascending: false }));
+      if (Array.isArray(data)) {
+        data = data.map((item) => ({ ...item, description: null }));
+      }
+    }
 
     if (error) {
       console.warn('Failed to load products', error.message);
@@ -430,18 +443,28 @@
 
     const payload = {
       name: productNameInput.value.trim(),
-      description: productDescriptionInput.value.trim() || null,
       category: productCategoryInput.value || null,
       price: Number(productPriceInput.value),
       stock: productStockInput.value === '' ? null : Number(productStockInput.value),
       status: productStatusInput.value,
       image: imageUrl
     };
+    if (supportsDescription) {
+      payload.description = productDescriptionInput.value.trim() || null;
+    }
 
     const id = productIdInput.value;
-    const { error } = id
+    let { error } = id
       ? await supabaseClient.from('products').update(payload).eq('id', id)
       : await supabaseClient.from('products').insert(payload);
+
+    if (error && /description/i.test(String(error.message || ''))) {
+      supportsDescription = false;
+      delete payload.description;
+      ({ error } = id
+        ? await supabaseClient.from('products').update(payload).eq('id', id)
+        : await supabaseClient.from('products').insert(payload));
+    }
 
     if (error) {
       console.warn('Failed to save product', error.message);

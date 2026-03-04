@@ -66,6 +66,7 @@
     const detailDescriptionText = document.getElementById('detailDescriptionText');
     const detailAddToCart = document.getElementById('detailAddToCart');
     const productId = new URLSearchParams(window.location.search).get('id');
+    const backLink = document.querySelector('.back-link');
     let currentProduct = null;
 
     function tr(key) {
@@ -255,6 +256,17 @@
       detailAddToCart.addEventListener('click', () => {
         if (!currentProduct?.id) return;
         addToCart(currentProduct.id);
+      });
+    }
+
+    if (backLink) {
+      backLink.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          window.location.href = 'sale-item.html';
+        }
       });
     }
 
