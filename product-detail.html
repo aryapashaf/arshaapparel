@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product Detail | ArshaApparel</title>
+  <link rel="stylesheet" href="product-detail.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar">
+    <a class="back-link" href="sale-item.html">
+      <span class="back-icon" aria-hidden="true">&#8592;</span>
+      <span id="detailBackText">Back to products</span>
+    </a>
+    <a class="cart-link" href="cart.html" aria-label="Cart">
+      &#128722;
+      <span class="cart-badge" id="cartBadge" aria-hidden="true"></span>
+    </a>
+  </nav>
+
+  <main class="container">
+    <section class="detail-layout" id="detailLayout" hidden>
+      <div class="detail-image-wrap">
+        <div class="detail-image" id="detailImage"></div>
+      </div>
+      <div class="detail-content">
+        <h1 id="detailName">Product</h1>
+        <p class="detail-price" id="detailPrice">-</p>
+        <div class="detail-meta">
+          <p><span id="detailCategoryLabel">Category</span>: <span id="detailCategoryValue">-</span></p>
+          <p><span id="detailStockLabel">Stock</span>: <span id="detailStockValue">-</span></p>
+        </div>
+        <button class="btn-add-cart" id="detailAddToCart" type="button">Add to Cart</button>
+      </div>
+    </section>
+
+    <section class="detail-description" id="detailDescriptionWrap" hidden>
+      <h2 id="detailDescriptionLabel">Description</h2>
+      <p id="detailDescriptionText">-</p>
+    </section>
+
+    <section class="detail-state" id="detailState">
+      <h2 id="detailNotFoundTitle">Products not found</h2>
+      <p id="detailNotFoundText">Product detail is not available.</p>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-init.js"></script>
+  <script src="currency-converter.js"></script>
+  <script>
+    const supabaseClient = window.supabaseClient;
+    const cartBadge = document.getElementById('cartBadge');
+    const detailLayout = document.getElementById('detailLayout');
+    const detailDescriptionWrap = document.getElementById('detailDescriptionWrap');
+    const detailState = document.getElementById('detailState');
+    const detailImage = document.getElementById('detailImage');
+    const detailName = document.getElementById('detailName');
+    const detailPrice = document.getElementById('detailPrice');
+    const detailCategoryValue = document.getElementById('detailCategoryValue');
+    const detailStockValue = document.getElementById('detailStockValue');
+    const detailDescriptionText = document.getElementById('detailDescriptionText');
+    const detailAddToCart = document.getElementById('detailAddToCart');
+    const productId = new URLSearchParams(window.location.search).get('id');
+    let currentProduct = null;
+
+    function tr(key) {
+      if (window.__i18nTr) return window.__i18nTr(key);
+      const fallback = {
+        add_to_cart: 'Add to Cart',
+        unavailable: 'Unavailable',
+        stock_not_enough: 'Product stock is not enough.',
+        products_not_found: 'Products not found',
+        product_detail_not_found: 'Product detail is not available.',
+        no_description: 'No description yet.'
+      };
+      return fallback[key] || key;
+    }
+
+    function trf(key, params) {
+      if (window.__i18nTrf) return window.__i18nTrf(key, params);
+      if (key === 'stock_max') return `Product stock is not enough. Max ${params?.stock || 0}.`;
+      return tr(key);
+    }
+
+    function formatPrice(value) {
+      const number = Number(value);
+      if (Number.isNaN(number)) return '-';
+      const lang = localStorage.getItem('siteLanguage') || 'en';
+      return (window.currencyService && window.currencyService.formatFromIDR)
+        ? window.currencyService.formatFromIDR(number, lang)
+        : number;
+    }
+
+    function getUserId() {
+      const stored = localStorage.getItem('loginInfo') || sessionStorage.getItem('loginInfo');
+      if (!stored) return null;
+      try {
+        const data = JSON.parse(stored);
+        if (data.role !== 'user') return null;
+        return data.email || data.name || null;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function setCartBadge(count) {
+      if (!cartBadge) return;
+      if (count > 0) {
+        cartBadge.textContent = count > 99 ? '99+' : String(count);
+        cartBadge.style.display = 'inline-flex';
+      } else {
+        cartBadge.style.display = 'none';
+      }
+    }
+
+    async function fetchCartCount() {
+      if (!supabaseClient || !cartBadge) return;
+      const userId = getUserId();
+      if (!userId) {
+        setCartBadge(0);
+        return;
+      }
+      const { data, error } = await supabaseClient
+        .from('cart_items')
+        .select('quantity, product:products(status)')
+        .eq('user_id', userId);
+
+      if (error) return;
+      const count = (data || []).reduce((sum, item) => {
+        if (item.product?.status === 'draft') return sum;
+        return sum + (item.quantity || 0);
+      }, 0);
+      setCartBadge(count);
+    }
+
+    function renderNotFound() {
+      detailLayout.hidden = true;
+      detailDescriptionWrap.hidden = true;
+      detailState.hidden = false;
+      document.title = tr('products_not_found') + ' | ArshaApparel';
+    }
+
+    function renderProduct(product) {
+      if (!product) {
+        renderNotFound();
+        return;
+      }
+      currentProduct = product;
+      const categoryKey = window.__i18nCategoryKey ? window.__i18nCategoryKey(product.category) : null;
+      const categoryText = categoryKey ? tr(categoryKey) : (product.category || '-');
+      const descriptionText = String(product.description || '').trim() || tr('no_description');
+      const hasStock = typeof product.stock === 'number';
+
+      detailName.textContent = product.name || '-';
+      detailPrice.textContent = formatPrice(product.price);
+      detailCategoryValue.textContent = categoryText;
+      detailStockValue.textContent = hasStock ? String(product.stock) : '-';
+      detailDescriptionText.textContent = descriptionText;
+
+      if (product.image) {
+        detailImage.style.backgroundImage = `url('${product.image}')`;
+      } else {
+        detailImage.style.backgroundImage = 'none';
+      }
+
+      if (detailAddToCart) {
+        const unavailable = product.status === 'out' || (hasStock && product.stock < 1);
+        detailAddToCart.disabled = unavailable;
+        detailAddToCart.textContent = unavailable ? tr('unavailable') : tr('add_to_cart');
+      }
+
+      detailLayout.hidden = false;
+      detailDescriptionWrap.hidden = false;
+      detailState.hidden = true;
+      document.title = (product.name || tr('product_col')) + ' | ArshaApparel';
+    }
+
+    async function fetchProductDetail() {
+      if (!supabaseClient || !productId) {
+        renderNotFound();
+        return;
+      }
+      const { data, error } = await supabaseClient
+        .from('products')
+        .select('*')
+        .eq('id', productId)
+        .neq('status', 'draft')
+        .maybeSingle();
+
+      if (error || !data) {
+        renderNotFound();
+        return;
+      }
+      renderProduct(data);
+    }
+
+    async function addToCart(productIdToAdd) {
+      if (!supabaseClient || !productIdToAdd) return;
+      const userId = getUserId();
+      if (!userId) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const { data: productData, error: productError } = await supabaseClient
+        .from('products')
+        .select('stock, status, name')
+        .eq('id', productIdToAdd)
+        .maybeSingle();
+
+      if (productError || !productData || productData.status === 'draft') {
+        return;
+      }
+
+      const { data, error } = await supabaseClient
+        .from('cart_items')
+        .select('id, quantity')
+        .eq('user_id', userId)
+        .eq('product_id', productIdToAdd)
+        .maybeSingle();
+
+      if (error && error.code !== 'PGRST116') return;
+
+      if (data?.id) {
+        const next = data.quantity + 1;
+        const stock = productData.stock;
+        if (typeof stock === 'number' && next > stock) {
+          alert(trf('stock_max', { stock }));
+          return;
+        }
+        await supabaseClient
+          .from('cart_items')
+          .update({ quantity: next })
+          .eq('id', data.id);
+      } else {
+        const stock = productData.stock;
+        if (typeof stock === 'number' && stock < 1) {
+          alert(tr('stock_not_enough'));
+          return;
+        }
+        await supabaseClient
+          .from('cart_items')
+          .insert({ user_id: userId, product_id: productIdToAdd, quantity: 1 });
+      }
+
+      fetchCartCount();
+    }
+
+    if (detailAddToCart) {
+      detailAddToCart.addEventListener('click', () => {
+        if (!currentProduct?.id) return;
+        addToCart(currentProduct.id);
+      });
+    }
+
+    window.addEventListener('currency:updated', () => {
+      if (currentProduct) renderProduct(currentProduct);
+    });
+
+    fetchProductDetail();
+    fetchCartCount();
+  </script>
+  <script src="i18n-global.js"></script>
+  <script src="loading-indicator.js"></script>
+</body>
+</html>

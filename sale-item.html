@@ -145,7 +145,7 @@
       }
 
       productGrid.innerHTML = items.map(product => `
-        <div class="product-card">
+        <div class="product-card" data-product-id="${product.id}">
           <div class="product-image" ${product.image ? `style="background-image: url('${product.image}');"` : ''}></div>
           <div class="product-info">
             <h3>${product.name}</h3>
@@ -158,6 +158,11 @@
           </div>
         </div>
       `).join('');
+    }
+
+    function goToProductDetail(productId) {
+      if (!productId) return;
+      window.location.href = `product-detail.html?id=${encodeURIComponent(productId)}`;
     }
 
     function applyFilters() {
@@ -447,9 +452,15 @@
     if (productGrid) {
       productGrid.addEventListener('click', (event) => {
         const button = event.target.closest('.btn-add-cart');
-        if (!button) return;
-        const productId = button.dataset.productId;
-        addToCart(productId);
+        if (button) {
+          event.stopPropagation();
+          const productId = button.dataset.productId;
+          addToCart(productId);
+          return;
+        }
+        const card = event.target.closest('.product-card[data-product-id]');
+        if (!card) return;
+        goToProductDetail(card.dataset.productId);
       });
     }
 

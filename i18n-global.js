@@ -91,6 +91,10 @@
       ,status_active: 'Active', status_out: 'Out', status_draft: 'Draft'
       ,close: 'Close', increase_price: 'Increase price', decrease_price: 'Decrease price'
       ,increase_stock: 'Increase stock', decrease_stock: 'Decrease stock'
+      ,product_description: 'Description'
+      ,product_detail_not_found: 'Product detail is not available.'
+      ,no_description: 'No description yet.'
+      ,back_to_products: 'Back to products'
     },
     id: {
       home: 'Beranda', products: 'Produk', categories: 'Kategori', login: 'Masuk',
@@ -179,6 +183,10 @@
       ,status_active: 'Aktif', status_out: 'Habis', status_draft: 'Draft'
       ,close: 'Tutup', increase_price: 'Tambah harga', decrease_price: 'Kurangi harga'
       ,increase_stock: 'Tambah stok', decrease_stock: 'Kurangi stok'
+      ,product_description: 'Deskripsi'
+      ,product_detail_not_found: 'Detail produk tidak tersedia.'
+      ,no_description: 'Belum ada deskripsi.'
+      ,back_to_products: 'Kembali ke produk'
     },
     zh: {
       home: '\u9996\u9875', products: '\u4ea7\u54c1', categories: '\u5206\u7c7b', login: '\u767b\u5f55',
@@ -266,7 +274,11 @@
       cat_shoes: '\u978b\u5b50', cat_socks: '\u889c\u5b50', cat_sandals: '\u51c9\u978b', cat_pants: '\u88e4\u5b50',
       status_active: '\u4e0a\u67b6', status_out: '\u552e\u7f44', status_draft: '\u8349\u7a3f',
       close: '\u5173\u95ed', increase_price: '\u63d0\u9ad8\u4ef7\u683c', decrease_price: '\u964d\u4f4e\u4ef7\u683c',
-      increase_stock: '\u589e\u52a0\u5e93\u5b58', decrease_stock: '\u51cf\u5c11\u5e93\u5b58'
+      increase_stock: '\u589e\u52a0\u5e93\u5b58', decrease_stock: '\u51cf\u5c11\u5e93\u5b58',
+      product_description: '\u63cf\u8ff0',
+      product_detail_not_found: '\u6682\u65e0\u5546\u54c1\u8be6\u60c5\u3002',
+      no_description: '\u6682\u65e0\u63cf\u8ff0\u3002',
+      back_to_products: '\u8fd4\u56de\u5546\u54c1\u5217\u8868'
     },
     ar: {
       home: '\u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629', products: '\u0627\u0644\u0645\u0646\u062a\u062c\u0627\u062a', categories: '\u0627\u0644\u0641\u0626\u0627\u062a', login: '\u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644',
@@ -354,7 +366,11 @@
       cat_shoes: '\u0623\u062d\u0630\u064a\u0629', cat_socks: '\u062c\u0648\u0627\u0631\u0628', cat_sandals: '\u0635\u0646\u0627\u062f\u0644', cat_pants: '\u0628\u0646\u0637\u0627\u0644',
       status_active: '\u0646\u0634\u0637', status_out: '\u0646\u0627\u0641\u062f', status_draft: '\u0645\u0633\u0648\u062f\u0629',
       close: '\u0625\u063a\u0644\u0627\u0642', increase_price: '\u0632\u064a\u0627\u062f\u0629 \u0627\u0644\u0633\u0639\u0631', decrease_price: '\u062e\u0641\u0636 \u0627\u0644\u0633\u0639\u0631',
-      increase_stock: '\u0632\u064a\u0627\u062f\u0629 \u0627\u0644\u0645\u062e\u0632\u0648\u0646', decrease_stock: '\u062e\u0641\u0636 \u0627\u0644\u0645\u062e\u0632\u0648\u0646'
+      increase_stock: '\u0632\u064a\u0627\u062f\u0629 \u0627\u0644\u0645\u062e\u0632\u0648\u0646', decrease_stock: '\u062e\u0641\u0636 \u0627\u0644\u0645\u062e\u0632\u0648\u0646',
+      product_description: '\u0627\u0644\u0648\u0635\u0641',
+      product_detail_not_found: '\u062a\u0641\u0627\u0635\u064a\u0644 \u0627\u0644\u0645\u0646\u062a\u062c \u063a\u064a\u0631 \u0645\u062a\u0627\u062d\u0629.',
+      no_description: '\u0644\u0627 \u064a\u0648\u062c\u062f \u0648\u0635\u0641 \u062d\u062a\u0649 \u0627\u0644\u0622\u0646.',
+      back_to_products: '\u0627\u0644\u0639\u0648\u062f\u0629 \u0625\u0644\u0649 \u0627\u0644\u0645\u0646\u062a\u062c\u0627\u062a'
     },
     de: {
       home: 'Start', products: 'Produkte', categories: 'Kategorien', login: 'Anmelden',
@@ -442,7 +458,11 @@
       cat_shoes: 'Schuhe', cat_socks: 'Socken', cat_sandals: 'Sandalen', cat_pants: 'Hosen',
       status_active: 'Aktiv', status_out: 'Ausverkauft', status_draft: 'Entwurf',
       close: 'Schließen', increase_price: 'Preis erhöhen', decrease_price: 'Preis senken',
-      increase_stock: 'Bestand erhöhen', decrease_stock: 'Bestand senken'
+      increase_stock: 'Bestand erhöhen', decrease_stock: 'Bestand senken',
+      product_description: 'Beschreibung',
+      product_detail_not_found: 'Produktdetails sind nicht verfugbar.',
+      no_description: 'Noch keine Beschreibung.',
+      back_to_products: 'Zuruck zu Produkten'
     }
   };
 
@@ -644,6 +664,7 @@
       setText('.top .welcome', 'manage_catalog');
       setText('#addProductText', 'add_product');
       setText('label[for="productName"] span', 'product_name');
+      setText('#productDescriptionLabel', 'product_description');
       setText('label[for="productCategory"] span', 'category_col');
       setText('label[for="productPrice"] span', 'price_col');
       setText('label[for="productStock"] span', 'stock_col');
@@ -675,6 +696,7 @@
       setText('#productStatus option[value="out"]', 'status_out');
       setText('#productStatus option[value="draft"]', 'status_draft');
       setAttr('#productName', 'placeholder', 'product_name');
+      setAttr('#productDescription', 'placeholder', 'product_description');
       setText('#saveBtn', 'save_product');
       setText('#removeImageBtn', 'remove_image');
       setText('#nameError', 'name_required');
@@ -762,6 +784,17 @@
     applyingDynamic = false;
   }
 
+  function applyProductDetail() {
+    if (!/product-detail\.html$/.test(location.pathname)) return;
+    setText('#detailBackText', 'back_to_products');
+    setText('#detailCategoryLabel', 'category_col');
+    setText('#detailStockLabel', 'stock_col');
+    setText('#detailDescriptionLabel', 'product_description');
+    setText('#detailAddToCart', 'add_to_cart');
+    setText('#detailNotFoundTitle', 'products_not_found');
+    setText('#detailNotFoundText', 'product_detail_not_found');
+  }
+
   function observeDynamic() {
     var scheduled = false;
     var observer = new MutationObserver(function () {
@@ -779,6 +812,7 @@
     applyIndex();
     applySaleItem();
     applyCart();
+    applyProductDetail();
     applyLogin();
     applyAdminPages();
     applyDynamic();

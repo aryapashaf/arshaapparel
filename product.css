@@ -181,7 +181,8 @@
 }
 
 .form-field input,
-.form-field select {
+.form-field select,
+.form-field textarea {
   background: #000000;
   border: 1px solid #2B2B2B;
   border-radius: 10px;
@@ -209,10 +210,16 @@
 }
 
 .form-field input:focus,
-.form-field select:focus {
+.form-field select:focus,
+.form-field textarea:focus {
   outline: none;
   border-color: #FFD400;
   box-shadow: 0 0 0 3px rgba(255, 212, 0, 0.15);
+}
+
+.form-field textarea {
+  resize: vertical;
+  min-height: 96px;
 }
 
 .help-text {
@@ -221,8 +228,13 @@
 }
 
 .form-field.invalid input,
-.form-field.invalid select {
+.form-field.invalid select,
+.form-field.invalid textarea {
   border-color: rgba(255, 212, 0, 0.6);
+}
+
+.form-field-full {
+  grid-column: 1 / -1;
 }
 
 .alert-box {

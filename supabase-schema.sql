@@ -2,6 +2,7 @@
 create table if not exists public.products (
   id uuid primary key default gen_random_uuid(),
   name text not null,
+  description text,
   price numeric(10, 2) not null,
   category text,
   status text default 'active',
@@ -9,6 +10,8 @@ create table if not exists public.products (
   image text,
   created_at timestamptz default now()
 );
+
+alter table public.products add column if not exists description text;
 
 alter table public.products enable row level security;
 

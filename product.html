@@ -86,6 +86,10 @@
               <input id="productName" type="text" placeholder="Product name" required>
               <small class="field-error alert-box" id="nameError">Name is required.</small>
             </label>
+            <label class="form-field form-field-full">
+              <span id="productDescriptionLabel">Description</span>
+              <textarea id="productDescription" rows="3" placeholder="Product description"></textarea>
+            </label>
             <label class="form-field">
               <span>Category</span>
               <div class="select-wrap category-select-wrap" id="productCategoryWrap">
@@ -195,6 +199,7 @@
   const productForm = document.getElementById('productForm');
   const productIdInput = document.getElementById('productId');
   const productNameInput = document.getElementById('productName');
+  const productDescriptionInput = document.getElementById('productDescription');
   const productCategoryInput = document.getElementById('productCategory');
   const productCategoryWrap = document.getElementById('productCategoryWrap');
   const productCategoryToggle = document.getElementById('productCategoryToggle');
@@ -310,7 +315,7 @@
     if (!supabaseClient) return;
     const { data, error } = await supabaseClient
       .from('products')
-      .select('id, name, price, category, status, stock')
+      .select('id, name, description, price, category, status, stock')
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -329,6 +334,7 @@
     modalTitle.textContent = mode === 'edit' ? tr('edit_product') : tr('add_product');
     productIdInput.value = product?.id || '';
     productNameInput.value = product?.name || '';
+    productDescriptionInput.value = product?.description || '';
     productCategoryInput.value = product?.category || '';
     productPriceInput.value = product?.price ?? '';
     productStockInput.value = product?.stock ?? '';
@@ -424,6 +430,7 @@
 
     const payload = {
       name: productNameInput.value.trim(),
+      description: productDescriptionInput.value.trim() || null,
       category: productCategoryInput.value || null,
       price: Number(productPriceInput.value),
       stock: productStockInput.value === '' ? null : Number(productStockInput.value),

@@ -461,13 +461,18 @@
       }
 
       featuredGrid.innerHTML = products.map(product => `
-        <div class="product-card">
+        <div class="product-card" data-product-id="${product.id}">
           <div class="product-img" ${product.image ? `style="background-image: url('${product.image}');"` : ''}></div>
           <h3>${product.name}</h3>
           <span>${formatPrice(product.price)}</span>
           <button class="btn-secondary" type="button" data-product-id="${product.id}">${t('addToCart')}</button>
         </div>
       `).join('');
+    }
+
+    function goToProductDetail(productId) {
+      if (!productId) return;
+      window.location.href = `product-detail.html?id=${encodeURIComponent(productId)}`;
     }
 
     async function fetchFeatured() {
@@ -614,9 +619,15 @@
     if (featuredGrid) {
       featuredGrid.addEventListener('click', (event) => {
         const button = event.target.closest('.btn-secondary');
-        if (!button) return;
-        const productId = button.dataset.productId;
-        addToCart(productId);
+        if (button) {
+          event.stopPropagation();
+          const productId = button.dataset.productId;
+          addToCart(productId);
+          return;
+        }
+        const card = event.target.closest('.product-card[data-product-id]');
+        if (!card) return;
+        goToProductDetail(card.dataset.productId);
       });
     }
 

@@ -284,6 +284,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 18px;
+  cursor: pointer;
   transition: transform .25s ease, box-shadow .25s ease;
 }
 
