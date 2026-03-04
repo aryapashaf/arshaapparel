@@ -441,7 +441,7 @@
       imageUrl = null;
     }
 
-    const payload = {
+    const nextData = {
       name: productNameInput.value.trim(),
       category: productCategoryInput.value || null,
       price: Number(productPriceInput.value),
@@ -450,20 +450,45 @@
       image: imageUrl
     };
     if (supportsDescription) {
-      payload.description = productDescriptionInput.value.trim() || null;
+      nextData.description = productDescriptionInput.value.trim() || null;
     }
 
     const id = productIdInput.value;
-    let { error } = id
-      ? await supabaseClient.from('products').update(payload).eq('id', id)
-      : await supabaseClient.from('products').insert(payload);
+    const isEdit = Boolean(id);
+    const existing = isEdit ? (productsCache.get(id) || {}) : null;
+    let payload = nextData;
+
+    if (isEdit) {
+      payload = {};
+      Object.keys(nextData).forEach((key) => {
+        const prev = existing && Object.prototype.hasOwnProperty.call(existing, key) ? existing[key] : null;
+        const next = nextData[key];
+        if ((prev ?? null) !== (next ?? null)) {
+          payload[key] = next;
+        }
+      });
+      if (Object.keys(payload).length === 0) {
+        closeModal();
+        return;
+      }
+    }
+
+    const runSave = () => (
+      isEdit
+        ? supabaseClient.from('products').update(payload).eq('id', id)
+        : supabaseClient.from('products').insert(payload)
+    );
+
+    let { error } = await runSave();
 
     if (error && /description/i.test(String(error.message || ''))) {
       supportsDescription = false;
       delete payload.description;
-      ({ error } = id
-        ? await supabaseClient.from('products').update(payload).eq('id', id)
-        : await supabaseClient.from('products').insert(payload));
+      if (isEdit && Object.keys(payload).length === 0) {
+        error = null;
+      } else {
+        ({ error } = await runSave());
+      }
     }
 
     if (error) {
