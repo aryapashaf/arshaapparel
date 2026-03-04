@@ -148,12 +148,24 @@ body::-webkit-scrollbar {
 }
 
 .modal-card {
-  width: min(620px, 92vw);
+  width: min(460px, 80vw);
   background: #0A0A0A;
   border: 1px solid #2B2B2B;
   border-radius: 16px;
   padding: 22px 24px 20px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  aspect-ratio: 4 / 5;
+  max-height: calc(100dvh - 140px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.modal-card::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 .modal-header {
@@ -251,7 +263,7 @@ body::-webkit-scrollbar {
   pointer-events: none;
 }
 
-.size-option span {
+.size-option label {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -266,7 +278,7 @@ body::-webkit-scrollbar {
   cursor: pointer;
 }
 
-.size-option input:checked + span {
+.size-option input:checked + label {
   border-color: rgba(255, 212, 0, 0.75);
   background: rgba(255, 212, 0, 0.14);
   color: #FFD400;
@@ -590,7 +602,9 @@ body::-webkit-scrollbar {
 
 @media (max-width: 520px) {
   .modal-card {
+    width: min(380px, 84vw);
     padding: 18px;
+    max-height: calc(100dvh - 110px);
   }
 
   .action-buttons {

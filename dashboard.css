@@ -159,8 +159,19 @@ body {
   color: var(--text-primary);
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+  gap: 4px;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 0;
+  line-height: 1;
+}
+
+.menu-toggle-line {
+  width: 16px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  display: block;
 }
 
 .nav-overlay {

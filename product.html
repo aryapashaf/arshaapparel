@@ -46,7 +46,11 @@
 
       <div class="top-actions">
         <button class="btn-add"><span class="btn-icon">+</span> <span id="addProductText">Add Product</span></button>
-        <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open menu">?</button>
+        <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open menu">
+          <span class="menu-toggle-line"></span>
+          <span class="menu-toggle-line"></span>
+          <span class="menu-toggle-line"></span>
+        </button>
       </div>
     </header>
 
@@ -121,11 +125,11 @@
                 </select>
               </div>
             </label>
-            <label class="form-field form-field-full">
+            <div class="form-field form-field-full">
               <span id="productSizeLabel">Available Sizes</span>
               <div class="size-options" id="productSizeOptions"></div>
               <small class="help-text" id="productSizeHint">Select sizes based on category.</small>
-            </label>
+            </div>
             <label class="form-field">
               <span>Price</span>
               <div class="number-field">
@@ -538,12 +542,15 @@
     if (selectedSizes.length === 0) {
       selectedSizes = options.slice();
     }
-    productSizeOptions.innerHTML = options.map((size) => `
-      <label class="size-option">
-        <input type="checkbox" class="size-check" value="${size}" ${selectedSizes.includes(size) ? 'checked' : ''}>
-        <span>${size}</span>
-      </label>
-    `).join('');
+    productSizeOptions.innerHTML = options.map((size, index) => {
+      const inputId = `sizeCheck-${index}-${String(size).replace(/[^a-zA-Z0-9_-]/g, '')}`;
+      return `
+      <div class="size-option">
+        <input id="${inputId}" type="checkbox" class="size-check" value="${size}" ${selectedSizes.includes(size) ? 'checked' : ''}>
+        <label for="${inputId}">${size}</label>
+      </div>
+    `;
+    }).join('');
     if (productSizeHint) {
       productSizeHint.textContent = `${selectedSizes.length} size(s) selected.`;
     }
@@ -1020,6 +1027,7 @@
   <script src="loading-indicator.js"></script>
 </body>
 </html>
+
 
 
 

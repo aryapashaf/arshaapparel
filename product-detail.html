@@ -60,7 +60,14 @@
       <p class="add-cart-name" id="addCartProductName">Product</p>
       <div class="add-cart-field">
         <label id="addCartSizeLabel" for="addCartSize">Size</label>
-        <select id="addCartSize"></select>
+        <div class="add-cart-size-wrap" id="addCartSizeWrap">
+          <button class="add-cart-size-toggle" id="addCartSizeToggle" type="button" aria-expanded="false">
+            <span id="addCartSizeValue">Default</span>
+            <span class="add-cart-size-caret" aria-hidden="true"></span>
+          </button>
+          <div class="add-cart-size-dropdown" id="addCartSizeDropdown"></div>
+          <select id="addCartSize" tabindex="-1" aria-hidden="true"></select>
+        </div>
         <small id="addCartSizeHint"></small>
       </div>
       <div class="add-cart-field">
@@ -99,6 +106,10 @@
     const addCartClose = document.getElementById('addCartClose');
     const addCartProductName = document.getElementById('addCartProductName');
     const addCartSize = document.getElementById('addCartSize');
+    const addCartSizeWrap = document.getElementById('addCartSizeWrap');
+    const addCartSizeToggle = document.getElementById('addCartSizeToggle');
+    const addCartSizeValue = document.getElementById('addCartSizeValue');
+    const addCartSizeDropdown = document.getElementById('addCartSizeDropdown');
     const addCartSizeHint = document.getElementById('addCartSizeHint');
     const addCartQtyMinus = document.getElementById('addCartQtyMinus');
     const addCartQtyPlus = document.getElementById('addCartQtyPlus');
@@ -332,19 +343,59 @@
       if (!addCartModal) return;
       addCartModal.classList.toggle('is-open', open);
       addCartModal.setAttribute('aria-hidden', open ? 'false' : 'true');
+      if (!open) setAddCartSizeOpen(false);
+    }
+
+    function setAddCartSizeOpen(open) {
+      if (!addCartSizeWrap || !addCartSizeToggle || addCartSizeToggle.disabled) return;
+      addCartSizeWrap.classList.toggle('is-open', open);
+      addCartSizeToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    function syncAddCartSizeUI() {
+      if (!addCartSize || !addCartSizeValue || !addCartSizeDropdown) return;
+      const selectedOption = addCartSize.options[addCartSize.selectedIndex];
+      addCartSizeValue.textContent = selectedOption?.textContent || tr('size_default');
+      addCartSizeDropdown.querySelectorAll('.add-cart-size-option').forEach((option) => {
+        option.classList.toggle('is-active', option.dataset.value === addCartSize.value);
+      });
     }
 
     function renderAddCartSizeOptions(product) {
       if (!addCartSize) return;
-      const sizes = normalizeSizeList(product);
+      const fallbackSizeByCategory = {
+        shirt: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+        't-shirt': ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+        jacket: ['S', 'M', 'L', 'XL', 'XXL'],
+        hoodie: ['S', 'M', 'L', 'XL', 'XXL'],
+        pants: ['28', '30', '32', '34', '36', '38'],
+        shoes: ['38', '39', '40', '41', '42', '43', '44'],
+        sandals: ['38', '39', '40', '41', '42', '43'],
+        socks: ['S-M', 'L-XL']
+      };
+      let sizes = normalizeSizeList(product);
+      if (sizes.length === 0) {
+        const key = String(product?.category || '').toLowerCase();
+        sizes = fallbackSizeByCategory[key] || [];
+      }
       if (sizes.length === 0) {
         addCartSize.innerHTML = `<option value="">${tr('size_default')}</option>`;
         addCartSize.disabled = true;
+        if (addCartSizeToggle) addCartSizeToggle.disabled = true;
+        if (addCartSizeDropdown) addCartSizeDropdown.innerHTML = '';
+        syncAddCartSizeUI();
         if (addCartSizeHint) addCartSizeHint.textContent = tr('no_size_selection');
         return;
       }
       addCartSize.disabled = false;
+      if (addCartSizeToggle) addCartSizeToggle.disabled = false;
       addCartSize.innerHTML = sizes.map((size) => `<option value="${size}">${size}</option>`).join('');
+      if (addCartSizeDropdown) {
+        addCartSizeDropdown.innerHTML = sizes.map((size) => (
+          `<button class="add-cart-size-option" type="button" data-value="${size}">${size}</button>`
+        )).join('');
+      }
+      syncAddCartSizeUI();
       if (addCartSizeHint) addCartSizeHint.textContent = trf('size_count_available', { count: sizes.length });
     }
 
@@ -595,6 +646,37 @@
         if (ok) setAddCartModalOpen(false);
       });
     }
+
+    if (addCartSizeToggle) {
+      addCartSizeToggle.addEventListener('click', () => {
+        const open = addCartSizeWrap?.classList.contains('is-open');
+        setAddCartSizeOpen(!open);
+      });
+    }
+
+    if (addCartSizeDropdown) {
+      addCartSizeDropdown.addEventListener('click', (event) => {
+        const option = event.target.closest('.add-cart-size-option');
+        if (!option || !addCartSize) return;
+        addCartSize.value = option.dataset.value || '';
+        syncAddCartSizeUI();
+        setAddCartSizeOpen(false);
+      });
+    }
+
+    if (addCartSize) {
+      addCartSize.addEventListener('change', syncAddCartSizeUI);
+    }
+
+    document.addEventListener('click', (event) => {
+      if (addCartSizeWrap && !addCartSizeWrap.contains(event.target)) {
+        setAddCartSizeOpen(false);
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') setAddCartSizeOpen(false);
+    });
 
     window.addEventListener('currency:updated', () => {
       if (currentProduct) renderProduct(currentProduct);

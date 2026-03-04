@@ -446,12 +446,144 @@ body {
   height: 40px;
   border-radius: 10px;
   border: 1px solid var(--border);
-  background: #000000;
+  background-color: #000000;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.2 4.3L6 8.1l3.8-3.8' fill='none' stroke='%23ffd400' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px 12px;
   color: #FFFFFF;
-  padding: 0 34px 0 10px;
+  padding: 0 40px 0 12px;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.add-cart-field select:focus {
+  outline: none;
+  border-color: rgba(255, 212, 0, 0.72);
+  box-shadow: 0 0 0 3px rgba(255, 212, 0, 0.16);
+}
+
+.add-cart-field select:disabled {
+  color: #B9B9B9;
+  border-color: #2B2B2B;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.2 4.3L6 8.1l3.8-3.8' fill='none' stroke='%23888888' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.add-cart-field select option {
+  background: #000000;
+  color: #FFFFFF;
+}
+
+.add-cart-size-wrap {
+  position: relative;
+}
+
+.add-cart-size-wrap select {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  inset: 0;
+}
+
+.add-cart-size-toggle {
+  width: 100%;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #000000;
+  color: #FFFFFF;
+  padding: 0 40px 0 12px;
+  display: inline-flex;
+  align-items: center;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.add-cart-size-toggle:focus {
+  outline: none;
+  border-color: rgba(255, 212, 0, 0.72);
+  box-shadow: 0 0 0 3px rgba(255, 212, 0, 0.16);
+}
+
+.add-cart-size-toggle:disabled {
+  color: #B9B9B9;
+  cursor: not-allowed;
+}
+
+.add-cart-size-caret {
+  position: absolute;
+  right: 14px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid #ffd400;
+  border-bottom: 2px solid #ffd400;
+  transform: rotate(45deg);
+  pointer-events: none;
+  transition: transform 0.16s ease;
+}
+
+.add-cart-size-toggle:disabled .add-cart-size-caret {
+  border-color: #888888;
+}
+
+.add-cart-size-wrap.is-open .add-cart-size-caret {
+  transform: rotate(-135deg);
+  margin-top: 4px;
+}
+
+.add-cart-size-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  max-height: 190px;
+  overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #000000;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 0.16s ease, transform 0.16s ease;
+  z-index: 4;
+}
+
+.add-cart-size-dropdown::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.add-cart-size-wrap.is-open .add-cart-size-dropdown {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.add-cart-size-option {
+  border: 1px solid transparent;
+  background: #000000;
+  color: #FFFFFF;
+  border-radius: 8px;
+  padding: 8px 10px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.add-cart-size-option:hover,
+.add-cart-size-option.is-active {
+  border-color: rgba(255, 212, 0, 0.65);
+  background: rgba(255, 212, 0, 0.12);
+  color: #ffd400;
 }
 
 .add-cart-field small {
