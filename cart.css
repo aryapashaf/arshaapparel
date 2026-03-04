@@ -7,6 +7,19 @@
   --accent: #FFD400;
 }
 
+html,
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -30,7 +43,9 @@ body {
   background: rgba(0, 0, 0, 0.9);
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(10px);
-  position: relative;
+  position: sticky;
+  top: 0;
+  z-index: 90;
 }
 
 .logo {
@@ -143,20 +158,25 @@ h1 {
 
 .product-img {
   width: 96px;
-  min-height: 96px;
-  height: auto;
+  aspect-ratio: 1 / 1;
   border-radius: 12px;
   background: #000000;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted);
-  font-size: 12px;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
   flex-shrink: 0;
-  align-self: stretch;
+}
+
+.product-media-el {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000000;
+}
+
+.product-img--empty {
+  border: 1px dashed rgba(255, 255, 255, 0.14);
 }
 
 .product-info {
@@ -321,22 +341,44 @@ h1 {
     padding: 18px;
   }
 
+  #cartItems {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
   .cart-item {
     flex-direction: column;
     align-items: flex-start;
-    gap: 14px;
+    gap: 12px;
+    margin: 0;
+    padding: 12px;
+    border-bottom: none;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: #000000;
+  }
+
+  .product-info h4 {
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+
+  .product-info p {
+    font-size: 12px;
   }
 
   .product-img {
     width: 100%;
-    min-height: 140px;
-    height: auto;
+    aspect-ratio: 1 / 1;
     align-self: flex-start;
   }
 
   .qty-control {
     width: 100%;
     justify-content: space-between;
+    padding: 8px 10px;
+    border-radius: 12px;
   }
 
   .cart-meta {
@@ -347,10 +389,23 @@ h1 {
   .price {
     min-width: auto;
     text-align: left;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent);
   }
 
   .remove {
     align-self: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #000000;
+    opacity: 1;
+  }
+
+  .cart-empty {
+    grid-column: 1 / -1;
   }
 }
 

@@ -87,10 +87,13 @@
 
     <div class="product-grid" id="featuredGrid">
       <div class="product-card">
-        <div class="product-img"></div>
-        <h3>Loading products...</h3>
-        <span>--</span>
-        <button class="btn-secondary" disabled>Loading</button>
+        <div class="product-image">Loading...</div>
+        <div class="product-info">
+          <h3>Loading products...</h3>
+          <p class="category">...</p>
+          <p class="price">--</p>
+          <button class="btn-add-cart" disabled>Loading</button>
+        </div>
       </div>
     </div>
   </section>
@@ -174,6 +177,30 @@
     <p id="footerText">Arya Pasha© 2026 ArshaApparel. All rights reserved.</p>
   </footer>
 
+  <div class="add-cart-modal" id="addCartModal" aria-hidden="true">
+    <div class="add-cart-modal-card" role="dialog" aria-modal="true" aria-labelledby="addCartTitle">
+      <div class="add-cart-head">
+        <h3 id="addCartTitle">Add to Cart</h3>
+        <button class="add-cart-close" id="addCartClose" type="button" aria-label="Close">x</button>
+      </div>
+      <p class="add-cart-name" id="addCartProductName">Product</p>
+      <div class="add-cart-field">
+        <label id="addCartSizeLabel" for="addCartSize">Size</label>
+        <select id="addCartSize"></select>
+        <small id="addCartSizeHint"></small>
+      </div>
+      <div class="add-cart-field">
+        <label id="addCartQtyLabel">Quantity</label>
+        <div class="add-cart-qty">
+          <button type="button" id="addCartQtyMinus">-</button>
+          <span id="addCartQtyValue">1</span>
+          <button type="button" id="addCartQtyPlus">+</button>
+        </div>
+      </div>
+      <button class="add-cart-confirm" id="addCartConfirm" type="button">Add to Cart</button>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="supabase-init.js"></script>
@@ -208,6 +235,7 @@
     const DICTIONARY = {
       en: {
         navHome: 'Home', navProducts: 'Products', navCategories: 'Categories', login: 'Login',
+        dashboard: 'Dashboard', settings: 'Settings', logout: 'Logout',
         heroTitle: 'Premium Products, Minimal Experience',
         heroDesc: 'Discover curated products with a clean and elegant shopping experience.',
         shopNow: 'Shop Now', featuredTitle: 'Featured Products', categoriesTitle: 'Shop by Categories',
@@ -216,6 +244,7 @@
       },
       id: {
         navHome: 'Beranda', navProducts: 'Produk', navCategories: 'Kategori', login: 'Masuk',
+        dashboard: 'Dashboard', settings: 'Pengaturan', logout: 'Keluar',
         heroTitle: 'Produk Premium, Pengalaman Minimalis',
         heroDesc: 'Temukan produk pilihan dengan pengalaman belanja yang bersih dan elegan.',
         shopNow: 'Belanja Sekarang', featuredTitle: 'Produk Unggulan', categoriesTitle: 'Belanja Berdasarkan Kategori',
@@ -224,6 +253,7 @@
       },
       zh: {
         navHome: '\u4E3B\u9875', navProducts: '\u4EA7\u54C1', navCategories: '\u5206\u7C7B', login: '\u767B\u5F55',
+        dashboard: '\u4EEA\u8868\u76D8', settings: '\u8BBE\u7F6E', logout: '\u9000\u51FA',
         heroTitle: '\u7CBE\u9009\u5546\u54C1\uFF0C\u6781\u7B80\u4F53\u9A8C',
         heroDesc: '\u63A2\u7D22\u7CBE\u9009\u5546\u54C1\uFF0C\u4EAB\u53D7\u7B80\u6D01\u4F18\u96C5\u7684\u8D2D\u7269\u4F53\u9A8C\u3002',
         shopNow: '\u7ACB\u5373\u8D2D\u4E70', featuredTitle: '\u7CBE\u9009\u5546\u54C1', categoriesTitle: '\u6309\u5206\u7C7B\u9009\u8D2D',
@@ -232,6 +262,7 @@
       },
       ar: {
         navHome: '\u0627\u0644\u0631\u0626\u064A\u0633\u064A\u0629', navProducts: '\u0627\u0644\u0645\u0646\u062A\u062C\u0627\u062A', navCategories: '\u0627\u0644\u0641\u0626\u0627\u062A', login: '\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644',
+        dashboard: '\u0644\u0648\u062D\u0629 \u0627\u0644\u062A\u062D\u0643\u0645', settings: '\u0627\u0644\u0625\u0639\u062F\u0627\u062F\u0627\u062A', logout: '\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C',
         heroTitle: '\u0645\u0646\u062A\u062C\u0627\u062A \u0645\u0645\u064A\u0632\u0629 \u0648\u062A\u062C\u0631\u0628\u0629 \u0628\u0633\u064A\u0637\u0629',
         heroDesc: '\u0627\u0643\u062A\u0634\u0641 \u0645\u0646\u062A\u062C\u0627\u062A \u0645\u062E\u062A\u0627\u0631\u0629 \u0645\u0639 \u062A\u062C\u0631\u0628\u0629 \u062A\u0633\u0648\u0642 \u0646\u0638\u064A\u0641\u0629 \u0648\u0623\u0646\u064A\u0642\u0629\u002E',
         shopNow: '\u062A\u0633\u0648\u0642 \u0627\u0644\u0622\u0646', featuredTitle: '\u0627\u0644\u0645\u0646\u062A\u062C\u0627\u062A \u0627\u0644\u0645\u0645\u064A\u0632\u0629', categoriesTitle: '\u062A\u0633\u0648\u0642 \u062D\u0633\u0628 \u0627\u0644\u0641\u0626\u0627\u062A',
@@ -240,6 +271,7 @@
       },
       de: {
         navHome: 'Start', navProducts: 'Produkte', navCategories: 'Kategorien', login: 'Anmelden',
+        dashboard: 'Dashboard', settings: 'Einstellungen', logout: 'Abmelden',
         heroTitle: 'Premium-Produkte, minimalistisches Erlebnis',
         heroDesc: 'Entdecke kuratierte Produkte mit einem klaren und eleganten Einkaufserlebnis.',
         shopNow: 'Jetzt einkaufen', featuredTitle: 'Empfohlene Produkte', categoriesTitle: 'Nach Kategorien einkaufen',
@@ -297,6 +329,9 @@
       if (navProducts) navProducts.textContent = t('navProducts');
       if (navCategories) navCategories.textContent = t('navCategories');
       if (loginLink) loginLink.textContent = t('login');
+      if (dashboardLink) dashboardLink.textContent = t('dashboard');
+      if (settingsLink) settingsLink.textContent = t('settings');
+      if (logoutBtn) logoutBtn.textContent = t('logout');
       if (heroTitle) heroTitle.textContent = t('heroTitle');
       if (heroDesc) heroDesc.textContent = t('heroDesc');
       if (heroShopNow) heroShopNow.textContent = t('shopNow');
@@ -306,7 +341,7 @@
       categoryButtons.forEach((button) => {
         button.textContent = t('shopNow');
       });
-      document.querySelectorAll('.btn-secondary').forEach((button) => {
+      document.querySelectorAll('.btn-secondary, .btn-add-cart').forEach((button) => {
         if (!button.dataset.productId) {
           button.textContent = t('unavailable');
         } else {
@@ -361,10 +396,23 @@
         return;
       }
 
-      const name = data?.name || (data?.email ? data.email.split('@')[0] : (role === 'admin' ? 'Admin' : 'User'));
+      const profileMap = (function () {
+        try { return JSON.parse(localStorage.getItem('userProfileMap') || '{}') || {}; } catch (error) { return {}; }
+      })();
+      const profileKey = String(data?.email || data?.name || '').toLowerCase();
+      const profileData = profileMap[profileKey] || {};
+      const name = profileData.name || data?.name || (data?.email ? data.email.split('@')[0] : (role === 'admin' ? 'Admin' : 'User'));
       profileName.textContent = name;
-      profileAvatar.textContent = name.trim().charAt(0).toUpperCase() || (role === 'admin' ? 'A' : 'U');
-      settingsLink.href = '#';
+      if (profileData.photo) {
+        profileAvatar.textContent = '';
+        profileAvatar.style.backgroundImage = `url(${profileData.photo})`;
+        profileAvatar.style.backgroundSize = 'cover';
+        profileAvatar.style.backgroundPosition = 'center';
+      } else {
+        profileAvatar.style.backgroundImage = '';
+        profileAvatar.textContent = name.trim().charAt(0).toUpperCase() || (role === 'admin' ? 'A' : 'U');
+      }
+      settingsLink.href = 'profile.html';
       dashboardLink.style.display = role === 'admin' ? 'block' : 'none';
     }
 
@@ -434,8 +482,21 @@
     });
 
     const featuredGrid = document.getElementById('featuredGrid');
+    const addCartModal = document.getElementById('addCartModal');
+    const addCartClose = document.getElementById('addCartClose');
+    const addCartProductName = document.getElementById('addCartProductName');
+    const addCartSize = document.getElementById('addCartSize');
+    const addCartSizeHint = document.getElementById('addCartSizeHint');
+    const addCartQtyMinus = document.getElementById('addCartQtyMinus');
+    const addCartQtyPlus = document.getElementById('addCartQtyPlus');
+    const addCartQtyValue = document.getElementById('addCartQtyValue');
+    const addCartConfirm = document.getElementById('addCartConfirm');
     const supabaseClient = window.supabaseClient;
     let featuredProductsCache = [];
+    let cartSupportsSize = true;
+    let productSupportsSizes = true;
+    let selectedAddCartProduct = null;
+    let selectedAddCartQty = 1;
 
     function formatPrice(value) {
       const number = Number(value);
@@ -445,29 +506,123 @@
         : number;
     }
 
+    function isVideoUrl(url) {
+      return /\.(mp4|webm|ogg|mov|m4v)$/i.test(String(url || ''));
+    }
+
+    let themeAlertTimer = null;
+    function showThemeAlert(message) {
+      if (!message) return;
+      const existing = document.getElementById('themeAlert');
+      if (existing) existing.remove();
+
+      const alertEl = document.createElement('div');
+      alertEl.id = 'themeAlert';
+      alertEl.className = 'theme-alert';
+      alertEl.setAttribute('role', 'alert');
+      alertEl.textContent = String(message);
+      document.body.appendChild(alertEl);
+
+      requestAnimationFrame(() => alertEl.classList.add('is-show'));
+      if (themeAlertTimer) clearTimeout(themeAlertTimer);
+      themeAlertTimer = setTimeout(() => {
+        alertEl.classList.remove('is-show');
+        setTimeout(() => alertEl.remove(), 200);
+      }, 2400);
+    }
+
+    function renderProductMedia(url, alt) {
+      if (!url) return `<div class="product-image product-image--empty"></div>`;
+      if (isVideoUrl(url)) {
+        return `<div class="product-image"><video class="product-media-el" src="${url}" muted loop playsinline preload="metadata"></video></div>`;
+      }
+      return `<div class="product-image"><img class="product-media-el" src="${url}" alt="${alt || 'Product'}" loading="lazy"></div>`;
+    }
+
     function renderFeatured(products) {
       if (!featuredGrid) return;
       featuredProductsCache = Array.isArray(products) ? products : [];
       if (!products || products.length === 0) {
+        const tr = window.__i18nTr || ((key) => key);
         featuredGrid.innerHTML = `
           <div class="product-card">
-            <div class="product-img"></div>
-            <h3>${t('noProducts')}</h3>
-            <span>--</span>
-            <button class="btn-secondary" disabled>${t('unavailable')}</button>
+            <div class="product-image">${t('noProducts')}</div>
+            <div class="product-info">
+              <h3>${tr('products_not_found')}</h3>
+              <p class="category">${tr('try_another_keyword')}</p>
+              <p class="price">Rp0</p>
+              <button class="btn-add-cart" disabled>${t('unavailable')}</button>
+            </div>
           </div>
         `;
         return;
       }
 
+      const tr = window.__i18nTr || ((key) => key);
+      const categoryKey = window.__i18nCategoryKey || (() => null);
       featuredGrid.innerHTML = products.map(product => `
         <div class="product-card" data-product-id="${product.id}">
-          <div class="product-img" ${product.image ? `style="background-image: url('${product.image}');"` : ''}></div>
-          <h3>${product.name}</h3>
-          <span>${formatPrice(product.price)}</span>
-          <button class="btn-secondary" type="button" data-product-id="${product.id}">${t('addToCart')}</button>
+          ${renderProductMedia(product.image, product.name)}
+          <div class="product-info">
+            <h3>${product.name}</h3>
+            <p class="category">${(function () {
+              const key = categoryKey(product.category);
+              return key ? tr(key) : (product.category || '-');
+            })()}</p>
+            <p class="price">${formatPrice(product.price)}</p>
+            <button class="btn-add-cart" type="button" data-product-id="${product.id}">${t('addToCart')}</button>
+          </div>
         </div>
       `).join('');
+    }
+
+    function normalizeSizeList(product) {
+      if (!product) return [];
+      if (Array.isArray(product.sizes)) {
+        return product.sizes.filter((value) => typeof value === 'string' && value.trim());
+      }
+      if (typeof product.sizes === 'string') {
+        try {
+          const parsed = JSON.parse(product.sizes);
+          if (Array.isArray(parsed)) {
+            return parsed.filter((value) => typeof value === 'string' && value.trim());
+          }
+        } catch (error) {}
+      }
+      return [];
+    }
+
+    function setAddCartModalOpen(open) {
+      if (!addCartModal) return;
+      addCartModal.classList.toggle('is-open', open);
+      addCartModal.setAttribute('aria-hidden', open ? 'false' : 'true');
+    }
+
+    function renderAddCartSizeOptions(product) {
+      if (!addCartSize) return;
+      const tr = window.__i18nTr || ((key) => key);
+      const trf = window.__i18nTrf || ((_, params) => `${params.count} size(s) available.`);
+      const sizes = normalizeSizeList(product);
+      if (sizes.length === 0) {
+        addCartSize.innerHTML = `<option value="">${tr('size_default')}</option>`;
+        addCartSize.disabled = true;
+        if (addCartSizeHint) addCartSizeHint.textContent = tr('no_size_selection');
+        return;
+      }
+      addCartSize.disabled = false;
+      addCartSize.innerHTML = sizes.map((size) => `<option value="${size}">${size}</option>`).join('');
+      if (addCartSizeHint) addCartSizeHint.textContent = trf('size_count_available', { count: sizes.length });
+    }
+
+    function openAddCartModal(productId) {
+      const product = featuredProductsCache.find((item) => String(item.id) === String(productId));
+      if (!product) return;
+      selectedAddCartProduct = { ...product, stock: Number(product.stock) };
+      selectedAddCartQty = 1;
+      if (addCartQtyValue) addCartQtyValue.textContent = String(selectedAddCartQty);
+      if (addCartProductName) addCartProductName.textContent = product.name || (window.__i18nTr ? window.__i18nTr('product_col') : 'Product');
+      renderAddCartSizeOptions(product);
+      setAddCartModalOpen(true);
     }
 
     function goToProductDetail(productId) {
@@ -477,12 +632,24 @@
 
     async function fetchFeatured() {
       if (!supabaseClient) return;
-      const { data, error } = await supabaseClient
+      let data = null;
+      let error = null;
+      ({ data, error } = await supabaseClient
         .from('products')
-        .select('id, name, price, image, status')
+        .select(productSupportsSizes ? 'id, name, price, category, image, status, stock, sizes' : 'id, name, price, category, image, status, stock')
         .neq('status', 'draft')
         .order('created_at', { ascending: false })
-        .limit(4);
+        .limit(4));
+
+      if (error && /sizes/i.test(String(error.message || ''))) {
+        productSupportsSizes = false;
+        ({ data, error } = await supabaseClient
+          .from('products')
+          .select('id, name, price, category, image, status, stock')
+          .neq('status', 'draft')
+          .order('created_at', { ascending: false })
+          .limit(4));
+      }
 
       if (error) {
         console.warn('Failed to load products', error.message);
@@ -550,84 +717,169 @@
       setCartBadge(count);
     }
 
-    async function addToCart(productId) {
-      if (!supabaseClient || !productId) return;
+    async function addToCart(productId, quantity, selectedSize) {
+      if (!supabaseClient || !productId) return false;
       const userId = getUserId();
       if (!userId) {
         window.location.href = 'login.html';
-        return;
+        return false;
       }
-      const { data: productData, error: productError } = await supabaseClient
+      const qty = Math.max(1, Number(quantity || 1));
+      let productData = null;
+      let productError = null;
+      ({ data: productData, error: productError } = await supabaseClient
         .from('products')
-        .select('stock, status')
+        .select(productSupportsSizes ? 'stock, status, sizes' : 'stock, status')
         .eq('id', productId)
-        .maybeSingle();
+        .maybeSingle());
+
+      if (productError && /sizes/i.test(String(productError.message || ''))) {
+        productSupportsSizes = false;
+        ({ data: productData, error: productError } = await supabaseClient
+          .from('products')
+          .select('stock, status')
+          .eq('id', productId)
+          .maybeSingle());
+      }
 
       if (productError) {
         console.warn('Failed to load product stock', productError.message);
-        return;
+        return false;
       }
       if (productData?.status === 'draft') {
-        return;
+        return false;
       }
-      const { data, error } = await supabaseClient
+      const sizes = normalizeSizeList(productData);
+      if (sizes.length > 0 && !selectedSize) {
+        const tr = window.__i18nTr || (() => 'Please choose a size.');
+        showThemeAlert(tr('choose_size_required'));
+        return false;
+      }
+
+      let data = null;
+      let error = null;
+      ({ data, error } = await supabaseClient
         .from('cart_items')
-        .select('id, quantity')
+        .select(cartSupportsSize ? 'id, quantity, size' : 'id, quantity')
         .eq('user_id', userId)
         .eq('product_id', productId)
-        .maybeSingle();
+        .order('created_at', { ascending: false }));
+
+      if (error && /size/i.test(String(error.message || ''))) {
+        cartSupportsSize = false;
+        ({ data, error } = await supabaseClient
+          .from('cart_items')
+          .select('id, quantity')
+          .eq('user_id', userId)
+          .eq('product_id', productId)
+          .order('created_at', { ascending: false }));
+      }
 
       if (error && error.code !== 'PGRST116') {
         console.warn('Failed to check cart', error.message);
-        return;
+        return false;
       }
 
-      if (data?.id) {
-        const next = data.quantity + 1;
-        const stock = productData?.stock;
-        if (typeof stock === 'number' && next > stock) {
+      const rows = Array.isArray(data) ? data : [];
+      const totalInCart = rows.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+      const matched = rows.find((item) => ((item.size || '') === (selectedSize || '')) || (!cartSupportsSize));
+      const stock = Number(productData?.stock);
+      const hasStock = Number.isFinite(stock) && stock >= 0;
+      if (hasStock && (totalInCart + qty) > stock) {
           const trf = window.__i18nTrf || ((_, params) => `Stok produk tidak cukup. Maksimal ${params.stock}.`);
-          alert(trf('stock_max', { stock }));
-          return;
-        }
+          showThemeAlert(trf('stock_max', { stock }));
+          return false;
+      }
+
+      if (matched?.id) {
+        const next = Number(matched.quantity || 0) + qty;
         const { error: updateError } = await supabaseClient
           .from('cart_items')
           .update({ quantity: next })
-          .eq('id', data.id);
+          .eq('id', matched.id);
         if (updateError) {
           console.warn('Failed to update cart', updateError.message);
+          return false;
         }
-        return;
+        return true;
       }
 
-      const stock = productData?.stock;
-      if (typeof stock === 'number' && stock < 1) {
+      if (hasStock && stock < qty) {
         const tr = window.__i18nTr || (() => 'Stok produk tidak cukup.');
-        alert(tr('stock_not_enough'));
-        return;
+        showThemeAlert(tr('stock_not_enough'));
+        return false;
       }
 
       const { error: insertError } = await supabaseClient
         .from('cart_items')
-        .insert({ user_id: userId, product_id: productId, quantity: 1 });
+        .insert(cartSupportsSize
+          ? { user_id: userId, product_id: productId, size: selectedSize || null, quantity: qty }
+          : { user_id: userId, product_id: productId, quantity: qty });
 
       if (insertError) {
         console.warn('Failed to add to cart', insertError.message);
+        return false;
       }
+      return true;
     }
 
     if (featuredGrid) {
       featuredGrid.addEventListener('click', (event) => {
-        const button = event.target.closest('.btn-secondary');
+        const button = event.target.closest('.btn-add-cart');
         if (button) {
           event.stopPropagation();
           const productId = button.dataset.productId;
-          addToCart(productId);
+          openAddCartModal(productId);
           return;
         }
         const card = event.target.closest('.product-card[data-product-id]');
         if (!card) return;
         goToProductDetail(card.dataset.productId);
+      });
+    }
+
+    if (addCartQtyMinus) {
+      addCartQtyMinus.addEventListener('click', () => {
+        selectedAddCartQty = Math.max(1, selectedAddCartQty - 1);
+        if (addCartQtyValue) addCartQtyValue.textContent = String(selectedAddCartQty);
+      });
+    }
+
+    if (addCartQtyPlus) {
+      addCartQtyPlus.addEventListener('click', () => {
+        const stock = Number(selectedAddCartProduct?.stock);
+        if (Number.isFinite(stock) && stock >= 0 && selectedAddCartQty >= stock) {
+          const trf = window.__i18nTrf || ((_, params) => `Stok produk tidak cukup. Maksimal ${params.stock}.`);
+          showThemeAlert(trf('stock_max', { stock }));
+          return;
+        }
+        selectedAddCartQty += 1;
+        if (addCartQtyValue) addCartQtyValue.textContent = String(selectedAddCartQty);
+      });
+    }
+
+    if (addCartClose) {
+      addCartClose.addEventListener('click', () => setAddCartModalOpen(false));
+    }
+
+    if (addCartModal) {
+      addCartModal.addEventListener('click', (event) => {
+        if (event.target === addCartModal) setAddCartModalOpen(false);
+      });
+    }
+
+    if (addCartConfirm) {
+      addCartConfirm.addEventListener('click', async () => {
+        if (!selectedAddCartProduct?.id) return;
+        const stock = Number(selectedAddCartProduct?.stock);
+        if (Number.isFinite(stock) && stock >= 0 && selectedAddCartQty > stock) {
+          const trf = window.__i18nTrf || ((_, params) => `Stok produk tidak cukup. Maksimal ${params.stock}.`);
+          showThemeAlert(trf('stock_max', { stock }));
+          return;
+        }
+        const size = addCartSize && !addCartSize.disabled ? addCartSize.value : null;
+        const ok = await addToCart(selectedAddCartProduct.id, selectedAddCartQty, size);
+        if (ok) setAddCartModalOpen(false);
       });
     }
 

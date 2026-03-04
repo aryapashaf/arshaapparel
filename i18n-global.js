@@ -5,10 +5,11 @@
 
   var T = {
     en: {
-      home: 'Home', products: 'Products', categories: 'Categories', login: 'Login',
+      home: 'Home', products: 'Products', categories: 'Categories', login: 'Login', settings: 'Settings', logout: 'Logout',
       cart: 'Cart', search: 'Search', search_product: 'Search product...', shop_now: 'Shop Now',
       featured_products: 'Featured Products', shop_by_categories: 'Shop by Categories',
       add_to_cart: 'Add to Cart', no_products_yet: 'No products yet', unavailable: 'Unavailable',
+      size_label: 'Size', quantity_label: 'Quantity',
       all_products: 'All Products', all_category: 'All Category', products_not_found: 'Products not found',
       try_another_keyword: 'Try another keyword',
       shopping_cart: 'Shopping Cart', cart_items: 'Cart Items', order_summary: 'Order Summary',
@@ -17,6 +18,8 @@
       sign_in_title: 'Sign In', sign_in_heading: 'Sign in to manage your experience', sign_in: 'Sign In',
       your_name: 'Your name', email_ph: 'name@email.com', pass_ph: 'Minimum 6 characters',
       dashboard: 'Dashboard', orders: 'Orders', payments: 'Payments', latest_products: 'Latest Products',
+      sales_overview: 'Sales Overview', per_day: 'Per Day', per_week: 'Per Week', per_year: 'Per Year',
+      no_sales_data: 'No sales data.', sales_total: 'Total sales: {{total}}',
       loading_products: 'Loading products...', no_products_found: 'No products found.',
       payment_records: 'Payment Records', order_items: 'Order Items', loading_orders: 'Loading orders...',
       loading_payments: 'Loading payments...', payment_status_desc: 'Payment status after checkout',
@@ -35,10 +38,14 @@
       show: 'Show', hide: 'Hide', user_role: 'User', admin_role: 'Admin',
       required_field: 'Required field.', email_invalid: 'Invalid email.',
       pass_min: 'Password must be at least 6 characters.',
+      choose_size_required: 'Please choose a size.',
       cancel_login: 'Cancel login', sign_up_preview: 'Sign up preview form', sign_in_preview: 'Sign in form',
       stock_not_enough: 'Product stock is not enough.',
       stock_max: 'Product stock is not enough. Max {{stock}}.',
       stock_product_not_enough: 'Stock for {{name}} is not enough.',
+      size_default: 'Default',
+      no_size_selection: 'No size selection for this product.',
+      size_count_available: '{{count}} size(s) available.',
       checkout_failed_try_again: 'Checkout failed. Please try again.',
       cart_empty_unavailable: 'Cart is empty or products are unavailable.',
       create_order_failed: 'Failed to create order.',
@@ -79,10 +86,12 @@
       no_image_yet: 'No image yet. Upload a file if you want one.',
       open_menu: 'Open menu'
       ,product_name: 'Product Name'
+      ,available_sizes: 'Available Sizes'
+      ,select_sizes_hint: 'Select sizes based on category.'
       ,select_category: 'Select category'
       ,upload_image: 'Upload Image'
       ,save_product: 'Save Product'
-      ,remove_image: 'Remove image'
+      ,remove_image: 'Remove file'
       ,price_required: 'Price is required.'
       ,name_required: 'Name is required.'
       ,all_recent_orders: 'All recent orders'
@@ -95,12 +104,18 @@
       ,product_detail_not_found: 'Product detail is not available.'
       ,no_description: 'No description yet.'
       ,back_to_products: 'Back to products'
+      ,profile_page: 'My Profile', back_home: 'Back to Home', change_photo: 'Change Photo'
+      ,role_label: 'Role', member_since: 'Member Since', profile_note: 'Profile photo and name are saved on this device.'
+      ,save_profile: 'Save Profile', profile_saved: 'Profile updated.', profile_need_login: 'Please login first.'
+      ,profile_photo_too_large: 'Image is too large. Max 2MB.', profile_invalid_image: 'Invalid image file.'
+      ,delete_photo: 'Delete Photo', edit_username: 'Edit Username', done_edit: 'Done', edit_profile: 'Edit Profile'
     },
     id: {
-      home: 'Beranda', products: 'Produk', categories: 'Kategori', login: 'Masuk',
+      home: 'Beranda', products: 'Produk', categories: 'Kategori', login: 'Masuk', settings: 'Pengaturan', logout: 'Keluar',
       cart: 'Keranjang', search: 'Cari', search_product: 'Cari produk...', shop_now: 'Belanja Sekarang',
       featured_products: 'Produk Unggulan', shop_by_categories: 'Belanja Berdasarkan Kategori',
       add_to_cart: 'Tambah ke Keranjang', no_products_yet: 'Belum ada produk', unavailable: 'Tidak tersedia',
+      size_label: 'Ukuran', quantity_label: 'Jumlah',
       all_products: 'Semua Produk', all_category: 'Semua Kategori', products_not_found: 'Produk tidak ditemukan',
       try_another_keyword: 'Coba kata kunci lain',
       shopping_cart: 'Keranjang Belanja', cart_items: 'Item Keranjang', order_summary: 'Ringkasan Pesanan',
@@ -109,6 +124,8 @@
       sign_in_title: 'Masuk', sign_in_heading: 'Masuk untuk mengelola pengalaman Anda', sign_in: 'Masuk',
       your_name: 'Nama Anda', email_ph: 'nama@email.com', pass_ph: 'Minimal 6 karakter',
       dashboard: 'Dashboard', orders: 'Pesanan', payments: 'Pembayaran', latest_products: 'Produk Terbaru',
+      sales_overview: 'Grafik Penjualan', per_day: 'Per Hari', per_week: 'Per Minggu', per_year: 'Per Tahun',
+      no_sales_data: 'Belum ada data penjualan.', sales_total: 'Total penjualan: {{total}}',
       loading_products: 'Memuat produk...', no_products_found: 'Produk tidak ditemukan.',
       payment_records: 'Data Pembayaran', order_items: 'Item Pesanan', loading_orders: 'Memuat pesanan...',
       loading_payments: 'Memuat pembayaran...', payment_status_desc: 'Status pembayaran setelah checkout',
@@ -127,10 +144,14 @@
       show: 'Tampilkan', hide: 'Sembunyikan', user_role: 'User', admin_role: 'Admin',
       required_field: 'Wajib diisi.', email_invalid: 'Email tidak valid.',
       pass_min: 'Password minimal 6 karakter.',
+      choose_size_required: 'Silakan pilih ukuran.',
       cancel_login: 'Batal login', sign_up_preview: 'Form preview daftar', sign_in_preview: 'Form masuk',
       stock_not_enough: 'Stok produk tidak cukup.',
       stock_max: 'Stok produk tidak cukup. Maksimal {{stock}}.',
       stock_product_not_enough: 'Stok {{name}} tidak cukup.',
+      size_default: 'Default',
+      no_size_selection: 'Tidak ada pilihan ukuran untuk produk ini.',
+      size_count_available: '{{count}} ukuran tersedia.',
       checkout_failed_try_again: 'Checkout gagal. Coba lagi.',
       cart_empty_unavailable: 'Cart kosong atau produk tidak tersedia.',
       create_order_failed: 'Gagal membuat order.',
@@ -171,10 +192,12 @@
       no_image_yet: 'Belum ada gambar. Unggah file jika diperlukan.',
       open_menu: 'Buka menu'
       ,product_name: 'Nama Produk'
+      ,available_sizes: 'Ukuran Tersedia'
+      ,select_sizes_hint: 'Pilih ukuran berdasarkan kategori.'
       ,select_category: 'Pilih kategori'
       ,upload_image: 'Unggah Gambar'
       ,save_product: 'Simpan Produk'
-      ,remove_image: 'Hapus gambar'
+      ,remove_image: 'Hapus file'
       ,price_required: 'Harga wajib diisi.'
       ,name_required: 'Nama wajib diisi.'
       ,all_recent_orders: 'Semua pesanan terbaru'
@@ -187,12 +210,18 @@
       ,product_detail_not_found: 'Detail produk tidak tersedia.'
       ,no_description: 'Belum ada deskripsi.'
       ,back_to_products: 'Kembali ke produk'
+      ,profile_page: 'Profil Saya', back_home: 'Kembali ke Beranda', change_photo: 'Ubah Foto'
+      ,role_label: 'Peran', member_since: 'Bergabung Sejak', profile_note: 'Foto dan nama profil disimpan di perangkat ini.'
+      ,save_profile: 'Simpan Profil', profile_saved: 'Profil diperbarui.', profile_need_login: 'Silakan login terlebih dahulu.'
+      ,profile_photo_too_large: 'Ukuran gambar terlalu besar. Maks 2MB.', profile_invalid_image: 'File gambar tidak valid.'
+      ,delete_photo: 'Hapus Foto', edit_username: 'Edit Username', done_edit: 'Selesai', edit_profile: 'Edit Profil'
     },
     zh: {
-      home: '\u9996\u9875', products: '\u4ea7\u54c1', categories: '\u5206\u7c7b', login: '\u767b\u5f55',
+      home: '\u9996\u9875', products: '\u4ea7\u54c1', categories: '\u5206\u7c7b', login: '\u767b\u5f55', settings: '\u8bbe\u7f6e', logout: '\u9000\u51fa',
       cart: '\u8d2d\u7269\u8f66', search: '\u641c\u7d22', search_product: '\u641c\u7d22\u4ea7\u54c1...', shop_now: '\u7acb\u5373\u8d2d\u4e70',
       featured_products: '\u7cbe\u9009\u5546\u54c1', shop_by_categories: '\u6309\u5206\u7c7b\u9009\u8d2d',
       add_to_cart: '\u52a0\u5165\u8d2d\u7269\u8f66', no_products_yet: '\u6682\u65e0\u5546\u54c1', unavailable: '\u6682\u65e0',
+      size_label: '\u5c3a\u5bf8', quantity_label: '\u6570\u91cf',
       all_products: '\u6240\u6709\u4ea7\u54c1', all_category: '\u5168\u90e8\u5206\u7c7b', products_not_found: '\u672a\u627e\u5230\u5546\u54c1',
       try_another_keyword: '\u8bf7\u5c1d\u8bd5\u5176\u4ed6\u5173\u952e\u8bcd',
       shopping_cart: '\u8d2d\u7269\u8f66', cart_items: '\u8d2d\u7269\u8f66\u9879\u76ee', order_summary: '\u8ba2\u5355\u6458\u8981',
@@ -201,6 +230,8 @@
       sign_in_title: '\u767b\u5f55', sign_in_heading: '\u767b\u5f55\u4ee5\u7ba1\u7406\u60a8\u7684\u4f53\u9a8c', sign_in: '\u767b\u5f55',
       your_name: '\u60a8\u7684\u59d3\u540d', email_ph: 'name@email.com', pass_ph: '\u81f3\u5c11 6 \u4e2a\u5b57\u7b26',
       dashboard: '\u4eea\u8868\u76d8', orders: '\u8ba2\u5355', payments: '\u652f\u4ed8', latest_products: '\u6700\u65b0\u5546\u54c1',
+      sales_overview: '\u9500\u552e\u8d8b\u52bf', per_day: '\u6309\u5929', per_week: '\u6309\u5468', per_year: '\u6309\u5e74',
+      no_sales_data: '\u6682\u65e0\u9500\u552e\u6570\u636e\u3002', sales_total: '\u9500\u552e\u603b\u989d\uff1a{{total}}',
       loading_products: '\u6b63\u5728\u52a0\u8f7d\u5546\u54c1...', no_products_found: '\u672a\u627e\u5230\u5546\u54c1\u3002',
       payment_records: '\u652f\u4ed8\u8bb0\u5f55', order_items: '\u8ba2\u5355\u9879', loading_orders: '\u6b63\u5728\u52a0\u8f7d\u8ba2\u5355...',
       loading_payments: '\u6b63\u5728\u52a0\u8f7d\u652f\u4ed8...', payment_status_desc: '\u7ed3\u8d26\u540e\u7684\u652f\u4ed8\u72b6\u6001',
@@ -219,10 +250,14 @@
       show: '\u663e\u793a', hide: '\u9690\u85cf', user_role: '\u7528\u6237', admin_role: '\u7ba1\u7406\u5458',
       required_field: '\u5fc5\u586b\u9879\u3002', email_invalid: '\u90ae\u7bb1\u683c\u5f0f\u65e0\u6548\u3002',
       pass_min: '\u5bc6\u7801\u81f3\u5c11 6 \u4e2a\u5b57\u7b26\u3002',
+      choose_size_required: '\u8bf7\u5148\u9009\u62e9\u5c3a\u5bf8\u3002',
       cancel_login: '\u53d6\u6d88\u767b\u5f55', sign_up_preview: '\u6ce8\u518c\u8868\u5355\u9884\u89c8', sign_in_preview: '\u767b\u5f55\u8868\u5355',
       stock_not_enough: '\u5546\u54c1\u5e93\u5b58\u4e0d\u8db3\u3002',
       stock_max: '\u5546\u54c1\u5e93\u5b58\u4e0d\u8db3\uff0c\u6700\u591a {{stock}}\u3002',
       stock_product_not_enough: '{{name}} \u5e93\u5b58\u4e0d\u8db3\u3002',
+      size_default: '\u9ed8\u8ba4',
+      no_size_selection: '\u8be5\u5546\u54c1\u65e0\u53ef\u9009\u5c3a\u5bf8\u3002',
+      size_count_available: '\u5171\u6709 {{count}} \u79cd\u5c3a\u5bf8\u53ef\u9009\u3002',
       checkout_failed_try_again: '\u7ed3\u8d26\u5931\u8d25\uff0c\u8bf7\u91cd\u8bd5\u3002',
       cart_empty_unavailable: '\u8d2d\u7269\u8f66\u4e3a\u7a7a\u6216\u5546\u54c1\u4e0d\u53ef\u7528\u3002',
       create_order_failed: '\u521b\u5efa\u8ba2\u5355\u5931\u8d25\u3002',
@@ -263,10 +298,12 @@
       no_image_yet: '\u6682\u65e0\u56fe\u7247\uff0c\u53ef\u4e0a\u4f20\u6587\u4ef6\u3002',
       open_menu: '\u6253\u5f00\u83dc\u5355',
       product_name: '\u5546\u54c1\u540d\u79f0',
+      available_sizes: '\u53ef\u7528\u5c3a\u5bf8',
+      select_sizes_hint: '\u8bf7\u6839\u636e\u5206\u7c7b\u9009\u62e9\u5c3a\u5bf8\u3002',
       select_category: '\u9009\u62e9\u5206\u7c7b',
       upload_image: '\u4e0a\u4f20\u56fe\u7247',
       save_product: '\u4fdd\u5b58\u5546\u54c1',
-      remove_image: '\u79fb\u9664\u56fe\u7247',
+      remove_image: '\u5220\u9664\u6587\u4ef6',
       price_required: '\u4ef7\u683c\u4e3a\u5fc5\u586b\u9879\u3002',
       name_required: '\u540d\u79f0\u4e3a\u5fc5\u586b\u9879\u3002',
       all_recent_orders: '\u6240\u6709\u6700\u65b0\u8ba2\u5355',
@@ -278,13 +315,19 @@
       product_description: '\u63cf\u8ff0',
       product_detail_not_found: '\u6682\u65e0\u5546\u54c1\u8be6\u60c5\u3002',
       no_description: '\u6682\u65e0\u63cf\u8ff0\u3002',
-      back_to_products: '\u8fd4\u56de\u5546\u54c1\u5217\u8868'
+      back_to_products: '\u8fd4\u56de\u5546\u54c1\u5217\u8868',
+      profile_page: '\u6211\u7684\u4e2a\u4eba\u4e3b\u9875', back_home: '\u8fd4\u56de\u9996\u9875', change_photo: '\u66f4\u6362\u5934\u50cf',
+      role_label: '\u89d2\u8272', member_since: '\u52a0\u5165\u65f6\u95f4', profile_note: '\u4e2a\u4eba\u5934\u50cf\u548c\u540d\u79f0\u4f1a\u4fdd\u5b58\u5728\u6b64\u8bbe\u5907\u4e0a\u3002',
+      save_profile: '\u4fdd\u5b58\u4e2a\u4eba\u4fe1\u606f', profile_saved: '\u4e2a\u4eba\u4fe1\u606f\u5df2\u66f4\u65b0\u3002', profile_need_login: '\u8bf7\u5148\u767b\u5f55\u3002',
+      profile_photo_too_large: '\u56fe\u7247\u8fc7\u5927\uff0c\u6700\u5927 2MB\u3002', profile_invalid_image: '\u56fe\u7247\u6587\u4ef6\u65e0\u6548\u3002',
+      delete_photo: '\u5220\u9664\u5934\u50cf', edit_username: '\u7f16\u8f91\u7528\u6237\u540d', done_edit: '\u5b8c\u6210', edit_profile: '\u7f16\u8f91\u4e2a\u4eba\u8d44\u6599'
     },
     ar: {
-      home: '\u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629', products: '\u0627\u0644\u0645\u0646\u062a\u062c\u0627\u062a', categories: '\u0627\u0644\u0641\u0626\u0627\u062a', login: '\u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644',
+      home: '\u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629', products: '\u0627\u0644\u0645\u0646\u062a\u062c\u0627\u062a', categories: '\u0627\u0644\u0641\u0626\u0627\u062a', login: '\u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644', settings: '\u0627\u0644\u0625\u0639\u062f\u0627\u062f\u0627\u062a', logout: '\u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062e\u0631\u0648\u062c',
       cart: '\u0627\u0644\u0633\u0644\u0629', search: '\u0628\u062d\u062b', search_product: '\u0627\u0628\u062d\u062b \u0639\u0646 \u0645\u0646\u062a\u062c...', shop_now: '\u062a\u0633\u0648\u0642 \u0627\u0644\u0622\u0646',
       featured_products: '\u0627\u0644\u0645\u0646\u062a\u062c\u0627\u062a \u0627\u0644\u0645\u0645\u064a\u0632\u0629', shop_by_categories: '\u062a\u0633\u0648\u0642 \u062d\u0633\u0628 \u0627\u0644\u0641\u0626\u0627\u062a',
       add_to_cart: '\u0623\u0636\u0641 \u0625\u0644\u0649 \u0627\u0644\u0633\u0644\u0629', no_products_yet: '\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0646\u062a\u062c\u0627\u062a \u0628\u0639\u062f', unavailable: '\u063a\u064a\u0631 \u0645\u062a\u0627\u062d',
+      size_label: '\u0627\u0644\u0645\u0642\u0627\u0633', quantity_label: '\u0627\u0644\u0643\u0645\u064a\u0629',
       all_products: '\u062c\u0645\u064a\u0639 \u0627\u0644\u0645\u0646\u062a\u062c\u0627\u062a', all_category: '\u062c\u0645\u064a\u0639 \u0627\u0644\u0641\u0626\u0627\u062a', products_not_found: '\u0644\u0645 \u064a\u062a\u0645 \u0627\u0644\u0639\u062b\u0648\u0631 \u0639\u0644\u0649 \u0645\u0646\u062a\u062c\u0627\u062a',
       try_another_keyword: '\u062c\u0631\u0628 \u0643\u0644\u0645\u0629 \u0623\u062e\u0631\u0649',
       shopping_cart: '\u0639\u0631\u0628\u0629 \u0627\u0644\u062a\u0633\u0648\u0642', cart_items: '\u0639\u0646\u0627\u0635\u0631 \u0627\u0644\u0633\u0644\u0629', order_summary: '\u0645\u0644\u062e\u0635 \u0627\u0644\u0637\u0644\u0628',
@@ -293,6 +336,8 @@
       sign_in_title: '\u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644', sign_in_heading: '\u0633\u062c\u0651\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0644\u0625\u062f\u0627\u0631\u0629 \u062a\u062c\u0631\u0628\u062a\u0643', sign_in: '\u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644',
       your_name: '\u0627\u0633\u0645\u0643', email_ph: 'name@email.com', pass_ph: '\u062d\u062f \u0623\u062f\u0646\u0649 6 \u0623\u062d\u0631\u0641',
       dashboard: '\u0644\u0648\u062d\u0629 \u0627\u0644\u062a\u062d\u0643\u0645', orders: '\u0627\u0644\u0637\u0644\u0628\u0627\u062a', payments: '\u0627\u0644\u0645\u062f\u0641\u0648\u0639\u0627\u062a', latest_products: '\u0623\u062d\u062f\u062b \u0627\u0644\u0645\u0646\u062a\u062c\u0627\u062a',
+      sales_overview: '\u0645\u062e\u0637\u0637 \u0627\u0644\u0645\u0628\u064a\u0639\u0627\u062a', per_day: '\u064a\u0648\u0645\u064a\u0627', per_week: '\u0623\u0633\u0628\u0648\u0639\u064a\u0627', per_year: '\u0633\u0646\u0648\u064a\u0627',
+      no_sales_data: '\u0644\u0627 \u062a\u0648\u062c\u062f \u0628\u064a\u0627\u0646\u0627\u062a \u0645\u0628\u064a\u0639\u0627\u062a.', sales_total: '\u0625\u062c\u0645\u0627\u0644\u064a \u0627\u0644\u0645\u0628\u064a\u0639\u0627\u062a: {{total}}',
       loading_products: '\u062c\u0627\u0631\u064a \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0645\u0646\u062a\u062c\u0627\u062a...', no_products_found: '\u0644\u0645 \u064a\u062a\u0645 \u0627\u0644\u0639\u062b\u0648\u0631 \u0639\u0644\u0649 \u0645\u0646\u062a\u062c\u0627\u062a.',
       payment_records: '\u0633\u062c\u0644\u0627\u062a \u0627\u0644\u0645\u062f\u0641\u0648\u0639\u0627\u062a', order_items: '\u0639\u0646\u0627\u0635\u0631 \u0627\u0644\u0637\u0644\u0628', loading_orders: '\u062c\u0627\u0631\u064a \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0637\u0644\u0628\u0627\u062a...',
       loading_payments: '\u062c\u0627\u0631\u064a \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0645\u062f\u0641\u0648\u0639\u0627\u062a...', payment_status_desc: '\u062d\u0627\u0644\u0629 \u0627\u0644\u062f\u0641\u0639 \u0628\u0639\u062f \u0625\u062a\u0645\u0627\u0645 \u0627\u0644\u0634\u0631\u0627\u0621',
@@ -311,10 +356,14 @@
       show: '\u0625\u0638\u0647\u0627\u0631', hide: '\u0625\u062e\u0641\u0627\u0621', user_role: '\u0645\u0633\u062a\u062e\u062f\u0645', admin_role: '\u0645\u062f\u064a\u0631',
       required_field: '\u062d\u0642\u0644 \u0625\u0644\u0632\u0627\u0645\u064a.', email_invalid: '\u0627\u0644\u0628\u0631\u064a\u062f \u063a\u064a\u0631 \u0635\u062d\u064a\u062d.',
       pass_min: '\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u064a\u062c\u0628 \u0623\u0646 \u062a\u0643\u0648\u0646 6 \u0623\u062d\u0631\u0641 \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0644.',
+      choose_size_required: '\u064a\u0631\u062c\u0649 \u0627\u062e\u062a\u064a\u0627\u0631 \u0627\u0644\u0645\u0642\u0627\u0633 \u0623\u0648\u0644\u064b\u0627.',
       cancel_login: '\u0625\u0644\u063a\u0627\u0621 \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644', sign_up_preview: '\u0646\u0645\u0648\u0630\u062c \u0645\u0639\u0627\u064a\u0646\u0629 \u0627\u0644\u062a\u0633\u062c\u064a\u0644', sign_in_preview: '\u0646\u0645\u0648\u0630\u062c \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644',
       stock_not_enough: '\u0645\u062e\u0632\u0648\u0646 \u0627\u0644\u0645\u0646\u062a\u062c \u063a\u064a\u0631 \u0643\u0627\u0641\u064d.',
       stock_max: '\u0645\u062e\u0632\u0648\u0646 \u0627\u0644\u0645\u0646\u062a\u062c \u063a\u064a\u0631 \u0643\u0627\u0641\u064d. \u0627\u0644\u062d\u062f \u0627\u0644\u0623\u0642\u0635\u0649 {{stock}}.',
       stock_product_not_enough: '\u0645\u062e\u0632\u0648\u0646 {{name}} \u063a\u064a\u0631 \u0643\u0627\u0641\u064d.',
+      size_default: '\u0627\u0641\u062a\u0631\u0627\u0636\u064a',
+      no_size_selection: '\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0642\u0627\u0633\u0627\u062a \u0645\u062a\u0627\u062d\u0629 \u0644\u0647\u0630\u0627 \u0627\u0644\u0645\u0646\u062a\u062c.',
+      size_count_available: '{{count}} \u0645\u0642\u0627\u0633\u0627\u062a \u0645\u062a\u0627\u062d\u0629.',
       checkout_failed_try_again: '\u0641\u0634\u0644 \u0625\u062a\u0645\u0627\u0645 \u0627\u0644\u0634\u0631\u0627\u0621\u060c \u062d\u0627\u0648\u0644 \u0645\u062c\u062f\u062f\u064b\u0627.',
       cart_empty_unavailable: '\u0627\u0644\u0633\u0644\u0629 \u0641\u0627\u0631\u063a\u0629 \u0623\u0648 \u0627\u0644\u0645\u0646\u062a\u062c\u0627\u062a \u063a\u064a\u0631 \u0645\u062a\u0627\u062d\u0629.',
       create_order_failed: '\u0641\u0634\u0644 \u0625\u0646\u0634\u0627\u0621 \u0627\u0644\u0637\u0644\u0628.',
@@ -355,10 +404,12 @@
       no_image_yet: '\u0644\u0627 \u062a\u0648\u062c\u062f \u0635\u0648\u0631\u0629 \u0628\u0639\u062f. \u0627\u0631\u0641\u0639 \u0645\u0644\u0641\u064b\u0627 \u0625\u0630\u0627 \u0623\u0631\u062f\u062a.',
       open_menu: '\u0641\u062a\u062d \u0627\u0644\u0642\u0627\u0626\u0645\u0629',
       product_name: '\u0627\u0633\u0645 \u0627\u0644\u0645\u0646\u062a\u062c',
+      available_sizes: '\u0627\u0644\u0645\u0642\u0627\u0633\u0627\u062a \u0627\u0644\u0645\u062a\u0627\u062d\u0629',
+      select_sizes_hint: '\u0627\u062e\u062a\u0631 \u0627\u0644\u0645\u0642\u0627\u0633\u0627\u062a \u062d\u0633\u0628 \u0627\u0644\u0641\u0626\u0629.',
       select_category: '\u0627\u062e\u062a\u0631 \u0627\u0644\u0641\u0626\u0629',
       upload_image: '\u0631\u0641\u0639 \u0635\u0648\u0631\u0629',
       save_product: '\u062d\u0641\u0638 \u0627\u0644\u0645\u0646\u062a\u062c',
-      remove_image: '\u0625\u0632\u0627\u0644\u0629 \u0627\u0644\u0635\u0648\u0631\u0629',
+      remove_image: '\u062d\u0630\u0641 \u0627\u0644\u0645\u0644\u0641',
       price_required: '\u0627\u0644\u0633\u0639\u0631 \u0645\u0637\u0644\u0648\u0628.',
       name_required: '\u0627\u0644\u0627\u0633\u0645 \u0645\u0637\u0644\u0648\u0628.',
       all_recent_orders: '\u062c\u0645\u064a\u0639 \u0627\u0644\u0637\u0644\u0628\u0627\u062a \u0627\u0644\u062d\u062f\u064a\u062b\u0629',
@@ -370,13 +421,19 @@
       product_description: '\u0627\u0644\u0648\u0635\u0641',
       product_detail_not_found: '\u062a\u0641\u0627\u0635\u064a\u0644 \u0627\u0644\u0645\u0646\u062a\u062c \u063a\u064a\u0631 \u0645\u062a\u0627\u062d\u0629.',
       no_description: '\u0644\u0627 \u064a\u0648\u062c\u062f \u0648\u0635\u0641 \u062d\u062a\u0649 \u0627\u0644\u0622\u0646.',
-      back_to_products: '\u0627\u0644\u0639\u0648\u062f\u0629 \u0625\u0644\u0649 \u0627\u0644\u0645\u0646\u062a\u062c\u0627\u062a'
+      back_to_products: '\u0627\u0644\u0639\u0648\u062f\u0629 \u0625\u0644\u0649 \u0627\u0644\u0645\u0646\u062a\u062c\u0627\u062a',
+      profile_page: '\u0645\u0644\u0641\u064a \u0627\u0644\u0634\u062e\u0635\u064a', back_home: '\u0627\u0644\u0639\u0648\u062f\u0629 \u0625\u0644\u0649 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629', change_photo: '\u062a\u063a\u064a\u064a\u0631 \u0627\u0644\u0635\u0648\u0631\u0629',
+      role_label: '\u0627\u0644\u062f\u0648\u0631', member_since: '\u0639\u0636\u0648 \u0645\u0646\u0630', profile_note: '\u064a\u062a\u0645 \u062d\u0641\u0638 \u0635\u0648\u0631\u0629 \u0627\u0644\u0645\u0644\u0641 \u0648\u0627\u0644\u0627\u0633\u0645 \u0639\u0644\u0649 \u0647\u0630\u0627 \u0627\u0644\u062c\u0647\u0627\u0632.',
+      save_profile: '\u062d\u0641\u0638 \u0627\u0644\u0645\u0644\u0641', profile_saved: '\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0645\u0644\u0641.', profile_need_login: '\u064a\u0631\u062c\u0649 \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0623\u0648\u0644\u0627\u064b.',
+      profile_photo_too_large: '\u0627\u0644\u0635\u0648\u0631\u0629 \u0643\u0628\u064a\u0631\u0629 \u062c\u062f\u0627\u064b. \u0627\u0644\u062d\u062f \u0627\u0644\u0623\u0642\u0635\u0649 2 \u0645\u064a\u062c\u0627.', profile_invalid_image: '\u0645\u0644\u0641 \u0635\u0648\u0631\u0629 \u063a\u064a\u0631 \u0635\u0627\u0644\u062d.',
+      delete_photo: '\u062d\u0630\u0641 \u0627\u0644\u0635\u0648\u0631\u0629', edit_username: '\u062a\u0639\u062f\u064a\u0644 \u0627\u0633\u0645 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645', done_edit: '\u062a\u0645', edit_profile: '\u062a\u062d\u0631\u064a\u0631 \u0627\u0644\u0645\u0644\u0641'
     },
     de: {
-      home: 'Start', products: 'Produkte', categories: 'Kategorien', login: 'Anmelden',
+      home: 'Start', products: 'Produkte', categories: 'Kategorien', login: 'Anmelden', settings: 'Einstellungen', logout: 'Abmelden',
       cart: 'Warenkorb', search: 'Suchen', search_product: 'Produkt suchen...', shop_now: 'Jetzt einkaufen',
       featured_products: 'Empfohlene Produkte', shop_by_categories: 'Nach Kategorien einkaufen',
       add_to_cart: 'In den Warenkorb', no_products_yet: 'Noch keine Produkte', unavailable: 'Nicht verfügbar',
+      size_label: 'Groesse', quantity_label: 'Menge',
       all_products: 'Alle Produkte', all_category: 'Alle Kategorien', products_not_found: 'Produkte nicht gefunden',
       try_another_keyword: 'Versuche ein anderes Stichwort',
       shopping_cart: 'Warenkorb', cart_items: 'Warenkorb-Artikel', order_summary: 'Bestellübersicht',
@@ -385,6 +442,8 @@
       sign_in_title: 'Anmelden', sign_in_heading: 'Melde dich an, um dein Erlebnis zu verwalten', sign_in: 'Anmelden',
       your_name: 'Dein Name', email_ph: 'name@email.com', pass_ph: 'Mindestens 6 Zeichen',
       dashboard: 'Dashboard', orders: 'Bestellungen', payments: 'Zahlungen', latest_products: 'Neueste Produkte',
+      sales_overview: 'Umsatzübersicht', per_day: 'Pro Tag', per_week: 'Pro Woche', per_year: 'Pro Jahr',
+      no_sales_data: 'Keine Verkaufsdaten.', sales_total: 'Gesamtumsatz: {{total}}',
       loading_products: 'Produkte werden geladen...', no_products_found: 'Keine Produkte gefunden.',
       payment_records: 'Zahlungseinträge', order_items: 'Bestellpositionen', loading_orders: 'Bestellungen werden geladen...',
       loading_payments: 'Zahlungen werden geladen...', payment_status_desc: 'Zahlungsstatus nach Checkout',
@@ -403,10 +462,14 @@
       show: 'Anzeigen', hide: 'Verbergen', user_role: 'Nutzer', admin_role: 'Admin',
       required_field: 'Pflichtfeld.', email_invalid: 'Ungültige E-Mail.',
       pass_min: 'Passwort muss mindestens 6 Zeichen haben.',
+      choose_size_required: 'Bitte wähle eine Größe.',
       cancel_login: 'Anmeldung abbrechen', sign_up_preview: 'Registrierungsformular', sign_in_preview: 'Anmeldeformular',
       stock_not_enough: 'Nicht genug Produktbestand.',
       stock_max: 'Nicht genug Produktbestand. Maximal {{stock}}.',
       stock_product_not_enough: 'Bestand von {{name}} reicht nicht aus.',
+      size_default: 'Standard',
+      no_size_selection: 'Keine Groessenauswahl fuer dieses Produkt.',
+      size_count_available: '{{count}} Groesse(n) verfuegbar.',
       checkout_failed_try_again: 'Checkout fehlgeschlagen. Bitte versuche es erneut.',
       cart_empty_unavailable: 'Warenkorb ist leer oder Produkte sind nicht verfügbar.',
       create_order_failed: 'Bestellung konnte nicht erstellt werden.',
@@ -447,10 +510,12 @@
       no_image_yet: 'Noch kein Bild. Lade eine Datei hoch, wenn du möchtest.',
       open_menu: 'Menü öffnen',
       product_name: 'Produktname',
+      available_sizes: 'Verfugbare Grossen',
+      select_sizes_hint: 'Wahle Grossen passend zur Kategorie.',
       select_category: 'Kategorie wählen',
       upload_image: 'Bild hochladen',
       save_product: 'Produkt speichern',
-      remove_image: 'Bild entfernen',
+      remove_image: 'Datei entfernen',
       price_required: 'Preis ist erforderlich.',
       name_required: 'Name ist erforderlich.',
       all_recent_orders: 'Alle aktuellen Bestellungen',
@@ -462,7 +527,12 @@
       product_description: 'Beschreibung',
       product_detail_not_found: 'Produktdetails sind nicht verfugbar.',
       no_description: 'Noch keine Beschreibung.',
-      back_to_products: 'Zuruck zu Produkten'
+      back_to_products: 'Zuruck zu Produkten',
+      profile_page: 'Mein Profil', back_home: 'Zuruck zur Startseite', change_photo: 'Foto andern',
+      role_label: 'Rolle', member_since: 'Mitglied seit', profile_note: 'Profilfoto und Name werden auf diesem Gerat gespeichert.',
+      save_profile: 'Profil speichern', profile_saved: 'Profil aktualisiert.', profile_need_login: 'Bitte zuerst anmelden.',
+      profile_photo_too_large: 'Bild ist zu gross. Maximal 2 MB.', profile_invalid_image: 'Ungultige Bilddatei.',
+      delete_photo: 'Foto loschen', edit_username: 'Benutzernamen bearbeiten', done_edit: 'Fertig', edit_profile: 'Profil bearbeiten'
     }
   };
 
@@ -531,6 +601,9 @@
     setText('#navProducts', 'products');
     setText('#navCategories', 'categories');
     setText('#loginLink', 'login');
+    setText('#dashboardLink', 'dashboard');
+    setText('#settingsLink', 'settings');
+    setText('#logoutBtn', 'logout');
     setMany('.category-shop-now', 'shop_now');
   }
 
@@ -540,6 +613,11 @@
     setText('#featuredTitle', 'featured_products');
     setText('#categoriesTitle', 'shop_by_categories');
     setMany('.btn-secondary[data-product-id]', 'add_to_cart');
+    setText('#addCartTitle', 'add_to_cart');
+    setText('#addCartSizeLabel', 'size_label');
+    setText('#addCartQtyLabel', 'quantity_label');
+    setText('#addCartConfirm', 'add_to_cart');
+    setAttr('#addCartClose', 'aria-label', 'close');
   }
 
   function applySaleItem() {
@@ -570,6 +648,11 @@
     setText('#categoryDropdown .category-option[data-value="sandals"]', 'cat_sandals');
     setText('#categoryDropdown .category-option[data-value="pants"]', 'cat_pants');
     setMany('.btn-add-cart', 'add_to_cart');
+    setText('#addCartTitle', 'add_to_cart');
+    setText('#addCartSizeLabel', 'size_label');
+    setText('#addCartQtyLabel', 'quantity_label');
+    setText('#addCartConfirm', 'add_to_cart');
+    setAttr('#addCartClose', 'aria-label', 'close');
   }
 
   function applyCart() {
@@ -644,6 +727,11 @@
       setText('.stats .card:nth-child(1) p', 'total_products');
       setText('.stats .card:nth-child(2) p', 'active_products');
       setText('.stats .card:nth-child(3) p', 'out_of_stock');
+      setText('#salesChartTitle', 'sales_overview');
+      setText('#salesFilterDay', 'per_day');
+      setText('#salesFilterWeek', 'per_week');
+      setText('#salesFilterYear', 'per_year');
+      setText('#salesChartEmpty', 'no_sales_data');
       setText('.card.wide h3', 'latest_products');
       setText('.table-card h3', 'latest_products');
       setText('thead th:nth-child(1)', 'product_col');
@@ -665,6 +753,8 @@
       setText('#addProductText', 'add_product');
       setText('label[for="productName"] span', 'product_name');
       setText('#productDescriptionLabel', 'product_description');
+      setText('#productSizeLabel', 'available_sizes');
+      setText('#productSizeHint', 'select_sizes_hint');
       setText('label[for="productCategory"] span', 'category_col');
       setText('label[for="productPrice"] span', 'price_col');
       setText('label[for="productStock"] span', 'stock_col');
@@ -793,6 +883,32 @@
     setText('#detailAddToCart', 'add_to_cart');
     setText('#detailNotFoundTitle', 'products_not_found');
     setText('#detailNotFoundText', 'product_detail_not_found');
+    setText('#addCartTitle', 'add_to_cart');
+    setText('#addCartSizeLabel', 'size_label');
+    setText('#addCartQtyLabel', 'quantity_label');
+    setText('#addCartConfirm', 'add_to_cart');
+    setAttr('#addCartClose', 'aria-label', 'close');
+  }
+
+  function applyProfilePage() {
+    if (!/profile\.html$/.test(location.pathname)) return;
+    document.title = tr('profile_page') + ' | ArshaApparel';
+    setText('#profilePageTitle', 'profile_page');
+    setText('#editProfileBtn', 'edit_profile');
+    setText('#editProfileTitle', 'edit_profile');
+    setText('#modalChangePhotoBtn', 'change_photo');
+    setText('#modalDeletePhotoBtn', 'delete_photo');
+    setText('#cancelEditBtn', 'cancel');
+    setText('#saveEditBtn', 'save_profile');
+    setText('#labelName', 'full_name');
+    setText('#labelEmail', 'email');
+    setText('#modalLabelName', 'full_name');
+    setText('#modalLabelEmail', 'email');
+    setText('#labelRole', 'role_label');
+    setText('#labelMemberSince', 'member_since');
+    setText('#profileNote', 'profile_note');
+    setAttr('#modalNameInput', 'placeholder', 'your_name');
+    setAttr('#closeEditModalBtn', 'aria-label', 'close');
   }
 
   function observeDynamic() {
@@ -813,6 +929,7 @@
     applySaleItem();
     applyCart();
     applyProductDetail();
+    applyProfilePage();
     applyLogin();
     applyAdminPages();
     applyDynamic();

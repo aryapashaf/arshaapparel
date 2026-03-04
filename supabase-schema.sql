@@ -3,6 +3,8 @@ create table if not exists public.products (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   description text,
+  images jsonb default '[]'::jsonb,
+  sizes jsonb default '[]'::jsonb,
   price numeric(10, 2) not null,
   category text,
   status text default 'active',
@@ -12,6 +14,8 @@ create table if not exists public.products (
 );
 
 alter table public.products add column if not exists description text;
+alter table public.products add column if not exists images jsonb default '[]'::jsonb;
+alter table public.products add column if not exists sizes jsonb default '[]'::jsonb;
 
 alter table public.products enable row level security;
 
@@ -51,11 +55,13 @@ create table if not exists public.cart_items (
   cart_id text,
   user_id text,
   product_id uuid not null references public.products(id) on delete cascade,
+  size text,
   quantity integer not null default 1,
   created_at timestamptz default now()
 );
 
 alter table public.cart_items add column if not exists user_id text;
+alter table public.cart_items add column if not exists size text;
 alter table public.cart_items alter column cart_id drop not null;
 
 create index if not exists cart_items_user_id_idx on public.cart_items(user_id);
@@ -105,11 +111,14 @@ create table if not exists public.order_items (
   order_id uuid not null references public.orders(id) on delete cascade,
   product_id uuid,
   product_name text,
+  size text,
   product_image text,
   price numeric(10, 2) default 0,
   quantity integer not null default 1,
   created_at timestamptz default now()
 );
+
+alter table public.order_items add column if not exists size text;
 
 create table if not exists public.payments (
   id uuid primary key default gen_random_uuid(),

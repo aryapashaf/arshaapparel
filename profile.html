@@ -1,0 +1,315 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile | ArshaApparel</title>
+  <link rel="stylesheet" href="profile.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar">
+    <a class="back-link" href="index.html" id="backHome">
+      <span class="back-icon" aria-hidden="true">&#8592;</span>
+      <span class="logo-text">ArshaApparel</span>
+    </a>
+    <h1 id="profilePageTitle">My Profile</h1>
+  </nav>
+
+  <main class="container">
+    <section class="profile-card">
+      <div class="profile-photo-wrap">
+        <div class="profile-photo" id="profilePhoto">U</div>
+      </div>
+
+      <div class="profile-fields">
+        <label id="labelName">Full Name</label>
+        <div class="display-field" id="displayName">-</div>
+
+        <label id="labelEmail">Email</label>
+        <div class="display-field" id="displayEmail">-</div>
+
+        <div class="meta-grid">
+          <div class="meta-item">
+            <span class="meta-label" id="labelRole">Role</span>
+            <span class="meta-value" id="roleValue">user</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label" id="labelMemberSince">Member Since</span>
+            <span class="meta-value" id="memberSinceValue">-</span>
+          </div>
+        </div>
+
+        <p class="profile-note" id="profileNote">Profile photo and name are saved on this device.</p>
+        <button class="btn-primary" id="editProfileBtn" type="button">Edit Profile</button>
+      </div>
+    </section>
+  </main>
+
+  <div class="profile-modal" id="editProfileModal" aria-hidden="true">
+    <div class="profile-modal-card">
+      <div class="profile-modal-head">
+        <h3 id="editProfileTitle">Edit Profile</h3>
+        <button class="profile-modal-close" id="closeEditModalBtn" type="button" aria-label="Close">x</button>
+      </div>
+
+      <div class="profile-modal-photo-wrap">
+        <div class="profile-photo profile-photo-sm" id="modalProfilePhoto">U</div>
+        <input type="file" id="photoInput" accept="image/*" hidden>
+        <div class="photo-actions">
+          <button class="btn-outline" id="modalChangePhotoBtn" type="button">Change Photo</button>
+          <button class="btn-danger" id="modalDeletePhotoBtn" type="button">Delete Photo</button>
+        </div>
+      </div>
+
+      <div class="profile-fields">
+        <label for="modalNameInput" id="modalLabelName">Full Name</label>
+        <input id="modalNameInput" type="text" placeholder="Your name">
+
+        <label for="modalEmailInput" id="modalLabelEmail">Email</label>
+        <input id="modalEmailInput" type="email" disabled>
+      </div>
+
+      <div class="profile-modal-actions">
+        <button class="btn-outline" id="cancelEditBtn" type="button">Cancel</button>
+        <button class="btn-primary" id="saveEditBtn" type="button">Save Profile</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-toast" id="profileToast" role="alert" aria-live="polite"></div>
+
+  <script>
+    const photoInput = document.getElementById('photoInput');
+    const profilePhoto = document.getElementById('profilePhoto');
+    const modalProfilePhoto = document.getElementById('modalProfilePhoto');
+    const displayName = document.getElementById('displayName');
+    const displayEmail = document.getElementById('displayEmail');
+    const modalNameInput = document.getElementById('modalNameInput');
+    const modalEmailInput = document.getElementById('modalEmailInput');
+    const roleValue = document.getElementById('roleValue');
+    const memberSinceValue = document.getElementById('memberSinceValue');
+    const editProfileBtn = document.getElementById('editProfileBtn');
+    const editProfileModal = document.getElementById('editProfileModal');
+    const closeEditModalBtn = document.getElementById('closeEditModalBtn');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const saveEditBtn = document.getElementById('saveEditBtn');
+    const modalChangePhotoBtn = document.getElementById('modalChangePhotoBtn');
+    const modalDeletePhotoBtn = document.getElementById('modalDeletePhotoBtn');
+    const profileToast = document.getElementById('profileToast');
+
+    let loginStorage = null;
+    let loginInfo = null;
+    let photoData = '';
+    let draftPhotoData = '';
+    let toastTimer = null;
+
+    function tr(key) {
+      if (window.__i18nTr) return window.__i18nTr(key);
+      const fallback = {
+        profile_saved: 'Profile updated.',
+        profile_need_login: 'Please login first.',
+        profile_photo_too_large: 'Image is too large. Max 2MB.',
+        profile_invalid_image: 'Invalid image file.'
+      };
+      return fallback[key] || key;
+    }
+
+    function showToast(message) {
+      if (!profileToast || !message) return;
+      profileToast.textContent = message;
+      profileToast.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => profileToast.classList.remove('show'), 1800);
+    }
+
+    function getLoginData() {
+      const local = localStorage.getItem('loginInfo');
+      const session = sessionStorage.getItem('loginInfo');
+      const raw = local || session;
+      if (!raw) return null;
+      try {
+        loginStorage = local ? localStorage : sessionStorage;
+        return JSON.parse(raw);
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function getProfileMap() {
+      try {
+        return JSON.parse(localStorage.getItem('userProfileMap') || '{}') || {};
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function saveProfileMap(map) {
+      localStorage.setItem('userProfileMap', JSON.stringify(map || {}));
+    }
+
+    function getProfileKey(data) {
+      if (!data) return null;
+      return String(data.email || data.name || '').toLowerCase();
+    }
+
+    function renderAvatar(el, name, photo) {
+      if (!el) return;
+      if (photo) {
+        el.textContent = '';
+        el.style.backgroundImage = `url(${photo})`;
+        el.classList.add('has-photo');
+        return;
+      }
+      el.classList.remove('has-photo');
+      el.style.backgroundImage = '';
+      el.textContent = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
+    }
+
+    function formatDate(value) {
+      if (!value) return '-';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return '-';
+      return date.toLocaleDateString();
+    }
+
+    function applyProfile() {
+      loginInfo = getLoginData();
+      if (!loginInfo) {
+        showToast(tr('profile_need_login'));
+        setTimeout(() => { window.location.href = 'login.html'; }, 500);
+        return;
+      }
+      const key = getProfileKey(loginInfo);
+      const map = getProfileMap();
+      const profile = key ? (map[key] || {}) : {};
+      const name = profile.name || loginInfo.name || (loginInfo.email ? loginInfo.email.split('@')[0] : 'User');
+      photoData = profile.photo || '';
+
+      displayName.textContent = name;
+      displayEmail.textContent = loginInfo.email || '-';
+      modalNameInput.value = name;
+      modalEmailInput.value = loginInfo.email || '-';
+      roleValue.textContent = loginInfo.role || 'user';
+      memberSinceValue.textContent = formatDate(loginInfo.loggedAt || loginInfo.created_at || Date.now());
+      renderAvatar(profilePhoto, name, photoData);
+      renderAvatar(modalProfilePhoto, name, photoData);
+    }
+
+    function openEditModal() {
+      if (!editProfileModal || !loginInfo) return;
+      draftPhotoData = photoData || '';
+      modalNameInput.value = displayName.textContent || '';
+      modalEmailInput.value = displayEmail.textContent || '-';
+      renderAvatar(modalProfilePhoto, modalNameInput.value, draftPhotoData);
+      editProfileModal.classList.add('is-open');
+      editProfileModal.setAttribute('aria-hidden', 'false');
+      modalNameInput.focus();
+    }
+
+    function closeEditModal() {
+      if (!editProfileModal) return;
+      editProfileModal.classList.remove('is-open');
+      editProfileModal.setAttribute('aria-hidden', 'true');
+    }
+
+    if (modalChangePhotoBtn) {
+      modalChangePhotoBtn.addEventListener('click', () => {
+        if (photoInput) photoInput.click();
+      });
+    }
+
+    if (photoInput) {
+      photoInput.addEventListener('change', (event) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        if (!file.type.startsWith('image/')) {
+          showToast(tr('profile_invalid_image'));
+          photoInput.value = '';
+          return;
+        }
+        if (file.size > (2 * 1024 * 1024)) {
+          showToast(tr('profile_photo_too_large'));
+          photoInput.value = '';
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+          draftPhotoData = String(reader.result || '');
+          renderAvatar(modalProfilePhoto, modalNameInput.value, draftPhotoData);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    if (modalDeletePhotoBtn) {
+      modalDeletePhotoBtn.addEventListener('click', () => {
+        draftPhotoData = '';
+        renderAvatar(modalProfilePhoto, modalNameInput.value, '');
+      });
+    }
+
+    if (modalNameInput) {
+      modalNameInput.addEventListener('input', () => {
+        renderAvatar(modalProfilePhoto, modalNameInput.value, draftPhotoData);
+      });
+    }
+
+    if (editProfileBtn) {
+      editProfileBtn.addEventListener('click', openEditModal);
+    }
+
+    if (closeEditModalBtn) {
+      closeEditModalBtn.addEventListener('click', closeEditModal);
+    }
+
+    if (cancelEditBtn) {
+      cancelEditBtn.addEventListener('click', closeEditModal);
+    }
+
+    if (saveEditBtn) {
+      saveEditBtn.addEventListener('click', () => {
+        if (!loginInfo) return;
+        const nextName = (modalNameInput.value || '').trim() || 'User';
+        const key = getProfileKey(loginInfo);
+        const map = getProfileMap();
+        if (key) {
+          map[key] = {
+            ...(map[key] || {}),
+            name: nextName,
+            photo: draftPhotoData || '',
+            updated_at: new Date().toISOString()
+          };
+          saveProfileMap(map);
+        }
+
+        const nextLogin = { ...loginInfo, name: nextName };
+        if (loginStorage) {
+          loginStorage.setItem('loginInfo', JSON.stringify(nextLogin));
+        }
+        loginInfo = nextLogin;
+        photoData = draftPhotoData || '';
+        displayName.textContent = nextName;
+        renderAvatar(profilePhoto, nextName, photoData);
+        closeEditModal();
+        showToast(tr('profile_saved'));
+      });
+    }
+
+    if (editProfileModal) {
+      editProfileModal.addEventListener('click', (event) => {
+        if (event.target === editProfileModal) closeEditModal();
+      });
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeEditModal();
+    });
+
+    applyProfile();
+  </script>
+  <script src="i18n-global.js"></script>
+  <script src="loading-indicator.js"></script>
+</body>
+</html>

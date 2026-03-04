@@ -87,6 +87,8 @@
     const searchBox = document.getElementById('searchBox');
     const backLink = document.querySelector('.back-logo');
     let cartData = [];
+    let cartSupportsSize = true;
+    let orderItemSupportsSize = true;
 
     function getUserId() {
       const stored = localStorage.getItem('loginInfo') || sessionStorage.getItem('loginInfo');
@@ -133,6 +135,26 @@
         : number;
     }
 
+    function isVideoUrl(url) {
+      return /\.(mp4|webm|ogg|mov|m4v)$/i.test(String(url || ''));
+    }
+
+    function renderCartMedia(url, alt) {
+      if (!url) return '<div class="product-img product-img--empty"></div>';
+      if (isVideoUrl(url)) {
+        return `
+          <div class="product-img">
+            <video class="product-media-el" src="${url}" muted loop playsinline preload="metadata"></video>
+          </div>
+        `;
+      }
+      return `
+        <div class="product-img">
+          <img class="product-media-el" src="${url}" alt="${alt || 'Product'}" loading="lazy">
+        </div>
+      `;
+    }
+
     function renderCart(items) {
       if (!cartItems) return;
       if (!items || items.length === 0) {
@@ -149,10 +171,10 @@
         subtotal += line;
         return `
           <div class="cart-item" data-id="${item.id}">
-            <div class="product-img" ${item.product?.image ? `style="background-image: url('${item.product.image}');"` : ''}></div>
+            ${renderCartMedia(item.product?.image, item.product?.name)}
             <div class="product-info">
               <h4>${item.product?.name || 'Product'}</h4>
-              <p>${item.product?.category || ''}</p>
+              <p>${item.product?.category || ''}${item.size ? ` - Size: ${item.size}` : ''}</p>
             </div>
             <div class="qty-control">
               <button class="qty-btn" data-action="decrease">-</button>
@@ -198,11 +220,24 @@
         totalValue.textContent = formatPrice(0);
         return;
       }
-      const { data, error } = await supabaseClient
+      let data = null;
+      let error = null;
+      ({ data, error } = await supabaseClient
         .from('cart_items')
-        .select('id, quantity, product:products(id, name, price, image, category, status)')
+        .select(cartSupportsSize
+          ? 'id, quantity, size, product:products(id, name, price, image, category, status)'
+          : 'id, quantity, product:products(id, name, price, image, category, status)')
         .eq('user_id', userId)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false }));
+
+      if (error && /size/i.test(String(error.message || ''))) {
+        cartSupportsSize = false;
+        ({ data, error } = await supabaseClient
+          .from('cart_items')
+          .select('id, quantity, product:products(id, name, price, image, category, status)')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false }));
+      }
 
       if (error) {
         console.warn('Failed to load cart', error.message);
@@ -221,11 +256,24 @@
         return;
       }
 
-      const { data: items, error } = await supabaseClient
+      let items = null;
+      let error = null;
+      ({ data: items, error } = await supabaseClient
         .from('cart_items')
-        .select('id, quantity, product:products(id, name, price, image, category, status, stock)')
+        .select(cartSupportsSize
+          ? 'id, quantity, size, product:products(id, name, price, image, category, status, stock)'
+          : 'id, quantity, product:products(id, name, price, image, category, status, stock)')
         .eq('user_id', userId)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false }));
+
+      if (error && /size/i.test(String(error.message || ''))) {
+        cartSupportsSize = false;
+        ({ data: items, error } = await supabaseClient
+          .from('cart_items')
+          .select('id, quantity, product:products(id, name, price, image, category, status, stock)')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false }));
+      }
 
       if (error) {
         console.warn('Failed to checkout', error.message);
@@ -241,7 +289,18 @@
         return;
       }
 
-      const insufficient = validItems.find(item => typeof item.product?.stock === 'number' && item.quantity > item.product.stock);
+      const qtyByProduct = {};
+      validItems.forEach((item) => {
+        const key = item.product?.id;
+        if (!key) return;
+        qtyByProduct[key] = (qtyByProduct[key] || 0) + Number(item.quantity || 0);
+      });
+      const insufficient = validItems.find((item) => {
+        const key = item.product?.id;
+        const stock = item.product?.stock;
+        if (!key || typeof stock !== 'number') return false;
+        return (qtyByProduct[key] || 0) > stock;
+      });
       if (insufficient) {
         const trf = window.__i18nTrf || ((_, params) => `Stok ${params.name} tidak cukup.`);
         showCartAlert(trf('stock_product_not_enough', { name: insufficient.product?.name || 'Product' }));
@@ -270,18 +329,31 @@
         return;
       }
 
-      const orderItemsPayload = validItems.map(item => ({
+      let orderItemsPayload = validItems.map(item => ({
         order_id: order.id,
         product_id: item.product?.id || null,
         product_name: item.product?.name || 'Product',
+        size: item.size || null,
         product_image: item.product?.image || null,
         price: item.product?.price || 0,
         quantity: item.quantity
       }));
 
-      const { error: itemsError } = await supabaseClient
+      let { error: itemsError } = await supabaseClient
         .from('order_items')
         .insert(orderItemsPayload);
+
+      if (itemsError && /size/i.test(String(itemsError.message || ''))) {
+        orderItemSupportsSize = false;
+        orderItemsPayload = orderItemsPayload.map((item) => {
+          const next = { ...item };
+          delete next.size;
+          return next;
+        });
+        ({ error: itemsError } = await supabaseClient
+          .from('order_items')
+          .insert(orderItemsPayload));
+      }
 
       if (itemsError) {
         console.warn('Failed to create order items', itemsError.message);
@@ -373,7 +445,14 @@
 
       if (updateError) {
         console.warn('Failed to update quantity', updateError.message);
+        return;
       }
+      cartData = cartData.map((item) => (
+        String(item.id) === String(id)
+          ? { ...item, quantity: Math.max(1, Number(item.quantity || 1) + delta) }
+          : item
+      ));
+      applySearch();
     }
 
     async function removeItem(id) {
@@ -385,18 +464,21 @@
 
       if (error) {
         console.warn('Failed to remove item', error.message);
+        return;
       }
+      cartData = cartData.filter((item) => String(item.id) !== String(id));
+      applySearch();
     }
 
     if (cartItems) {
-      cartItems.addEventListener('click', (event) => {
+      cartItems.addEventListener('click', async (event) => {
         const row = event.target.closest('.cart-item');
         if (!row) return;
         const id = row.dataset.id;
         const action = event.target.dataset.action;
-        if (action === 'increase') updateQuantity(id, 1);
-        if (action === 'decrease') updateQuantity(id, -1);
-        if (action === 'remove') removeItem(id);
+        if (action === 'increase') await updateQuantity(id, 1);
+        if (action === 'decrease') await updateQuantity(id, -1);
+        if (action === 'remove') await removeItem(id);
       });
     }
 

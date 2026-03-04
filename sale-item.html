@@ -95,6 +95,30 @@
     </section>
   </main>
 
+  <div class="add-cart-modal" id="addCartModal" aria-hidden="true">
+    <div class="add-cart-modal-card" role="dialog" aria-modal="true" aria-labelledby="addCartTitle">
+      <div class="add-cart-head">
+        <h3 id="addCartTitle">Add to Cart</h3>
+        <button class="add-cart-close" id="addCartClose" type="button" aria-label="Close">x</button>
+      </div>
+      <p class="add-cart-name" id="addCartProductName">Product</p>
+      <div class="add-cart-field">
+        <label id="addCartSizeLabel" for="addCartSize">Size</label>
+        <select id="addCartSize"></select>
+        <small id="addCartSizeHint"></small>
+      </div>
+      <div class="add-cart-field">
+        <label id="addCartQtyLabel">Quantity</label>
+        <div class="add-cart-qty">
+          <button type="button" id="addCartQtyMinus">-</button>
+          <span id="addCartQtyValue">1</span>
+          <button type="button" id="addCartQtyPlus">+</button>
+        </div>
+      </div>
+      <button class="add-cart-confirm" id="addCartConfirm" type="button">Add to Cart</button>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="supabase-init.js"></script>
@@ -112,7 +136,20 @@
     const searchBox = document.getElementById('searchBox');
     const cartBadge = document.getElementById('cartBadge');
     const backLink = document.querySelector('.back-logo');
+    const addCartModal = document.getElementById('addCartModal');
+    const addCartClose = document.getElementById('addCartClose');
+    const addCartProductName = document.getElementById('addCartProductName');
+    const addCartSize = document.getElementById('addCartSize');
+    const addCartSizeHint = document.getElementById('addCartSizeHint');
+    const addCartQtyMinus = document.getElementById('addCartQtyMinus');
+    const addCartQtyPlus = document.getElementById('addCartQtyPlus');
+    const addCartQtyValue = document.getElementById('addCartQtyValue');
+    const addCartConfirm = document.getElementById('addCartConfirm');
     let allProducts = [];
+    let cartSupportsSize = true;
+    let productSupportsSizes = true;
+    let selectedAddCartProduct = null;
+    let selectedAddCartQty = 1;
 
     function formatPrice(value) {
       const number = Number(value);
@@ -124,6 +161,88 @@
       return (window.currencyService && window.currencyService.formatFromIDR)
         ? window.currencyService.formatFromIDR(number)
         : number;
+    }
+
+    function isVideoUrl(url) {
+      return /\.(mp4|webm|ogg|mov|m4v)$/i.test(String(url || ''));
+    }
+
+    let themeAlertTimer = null;
+    function showThemeAlert(message) {
+      if (!message) return;
+      const existing = document.getElementById('themeAlert');
+      if (existing) existing.remove();
+
+      const alertEl = document.createElement('div');
+      alertEl.id = 'themeAlert';
+      alertEl.className = 'theme-alert';
+      alertEl.setAttribute('role', 'alert');
+      alertEl.textContent = String(message);
+      document.body.appendChild(alertEl);
+
+      requestAnimationFrame(() => alertEl.classList.add('is-show'));
+      if (themeAlertTimer) clearTimeout(themeAlertTimer);
+      themeAlertTimer = setTimeout(() => {
+        alertEl.classList.remove('is-show');
+        setTimeout(() => alertEl.remove(), 200);
+      }, 2400);
+    }
+
+    function renderProductMedia(url, alt) {
+      if (!url) return `<div class="product-image product-image--empty"></div>`;
+      if (isVideoUrl(url)) {
+        return `<div class="product-image"><video class="product-media-el" src="${url}" muted loop playsinline preload="metadata"></video></div>`;
+      }
+      return `<div class="product-image"><img class="product-media-el" src="${url}" alt="${alt || 'Product'}" loading="lazy"></div>`;
+    }
+
+    function normalizeSizeList(product) {
+      if (!product) return [];
+      if (Array.isArray(product.sizes)) {
+        return product.sizes.filter((value) => typeof value === 'string' && value.trim());
+      }
+      if (typeof product.sizes === 'string') {
+        try {
+          const parsed = JSON.parse(product.sizes);
+          if (Array.isArray(parsed)) {
+            return parsed.filter((value) => typeof value === 'string' && value.trim());
+          }
+        } catch (error) {}
+      }
+      return [];
+    }
+
+    function setAddCartModalOpen(open) {
+      if (!addCartModal) return;
+      addCartModal.classList.toggle('is-open', open);
+      addCartModal.setAttribute('aria-hidden', open ? 'false' : 'true');
+    }
+
+    function renderAddCartSizeOptions(product) {
+      if (!addCartSize) return;
+      const tr = window.__i18nTr || ((key) => key);
+      const trf = window.__i18nTrf || ((_, params) => `${params.count} size(s) available.`);
+      const sizes = normalizeSizeList(product);
+      if (sizes.length === 0) {
+        addCartSize.innerHTML = `<option value="">${tr('size_default')}</option>`;
+        addCartSize.disabled = true;
+        if (addCartSizeHint) addCartSizeHint.textContent = tr('no_size_selection');
+        return;
+      }
+      addCartSize.disabled = false;
+      addCartSize.innerHTML = sizes.map((size) => `<option value="${size}">${size}</option>`).join('');
+      if (addCartSizeHint) addCartSizeHint.textContent = trf('size_count_available', { count: sizes.length });
+    }
+
+    function openAddCartModal(productId) {
+      const product = allProducts.find((item) => String(item.id) === String(productId));
+      if (!product) return;
+      selectedAddCartProduct = { ...product, stock: Number(product.stock) };
+      selectedAddCartQty = 1;
+      if (addCartQtyValue) addCartQtyValue.textContent = String(selectedAddCartQty);
+      if (addCartProductName) addCartProductName.textContent = product.name || (window.__i18nTr ? window.__i18nTr('product_col') : 'Product');
+      renderAddCartSizeOptions(product);
+      setAddCartModalOpen(true);
     }
 
     function renderProducts(items) {
@@ -146,7 +265,7 @@
 
       productGrid.innerHTML = items.map(product => `
         <div class="product-card" data-product-id="${product.id}">
-          <div class="product-image" ${product.image ? `style="background-image: url('${product.image}');"` : ''}></div>
+          ${renderProductMedia(product.image, product.name)}
           <div class="product-info">
             <h3>${product.name}</h3>
             <p class="category">${(function () {
@@ -200,11 +319,22 @@
 
     async function fetchProducts() {
       if (!supabaseClient) return;
-      const { data, error } = await supabaseClient
+      let data = null;
+      let error = null;
+      ({ data, error } = await supabaseClient
         .from('products')
-        .select('id, name, price, category, image, status')
+        .select(productSupportsSizes ? 'id, name, price, category, image, status, stock, sizes' : 'id, name, price, category, image, status, stock')
         .neq('status', 'draft')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false }));
+
+      if (error && /sizes/i.test(String(error.message || ''))) {
+        productSupportsSizes = false;
+        ({ data, error } = await supabaseClient
+          .from('products')
+          .select('id, name, price, category, image, status, stock')
+          .neq('status', 'draft')
+          .order('created_at', { ascending: false }));
+      }
 
       if (error) {
         console.warn('Failed to load products', error.message);
@@ -381,72 +511,112 @@
       setCartBadge(count);
     }
 
-    async function addToCart(productId) {
-      if (!supabaseClient || !productId) return;
+    async function addToCart(productId, quantity, selectedSize) {
+      if (!supabaseClient || !productId) return false;
       const userId = getUserId();
       if (!userId) {
         window.location.href = 'login.html';
-        return;
+        return false;
       }
+      const qty = Math.max(1, Number(quantity || 1));
 
-      const { data: productData, error: productError } = await supabaseClient
+      let productData = null;
+      let productError = null;
+      ({ data: productData, error: productError } = await supabaseClient
         .from('products')
-        .select('stock, status')
+        .select(productSupportsSizes ? 'stock, status, sizes' : 'stock, status')
         .eq('id', productId)
-        .maybeSingle();
+        .maybeSingle());
+
+      if (productError && /sizes/i.test(String(productError.message || ''))) {
+        productSupportsSizes = false;
+        ({ data: productData, error: productError } = await supabaseClient
+          .from('products')
+          .select('stock, status')
+          .eq('id', productId)
+          .maybeSingle());
+      }
 
       if (productError) {
         console.warn('Failed to load product stock', productError.message);
-        return;
+        return false;
       }
       if (productData?.status === 'draft') {
-        return;
+        return false;
       }
 
-      const { data, error } = await supabaseClient
+      const sizes = normalizeSizeList(productData);
+      if (sizes.length > 0 && !selectedSize) {
+        const tr = window.__i18nTr || (() => 'Please choose a size.');
+        showThemeAlert(tr('choose_size_required'));
+        return false;
+      }
+
+      let data = null;
+      let error = null;
+      ({ data, error } = await supabaseClient
         .from('cart_items')
-        .select('id, quantity')
+        .select(cartSupportsSize ? 'id, quantity, size' : 'id, quantity')
         .eq('user_id', userId)
         .eq('product_id', productId)
-        .maybeSingle();
+        .order('created_at', { ascending: false }));
+
+      if (error && /size/i.test(String(error.message || ''))) {
+        cartSupportsSize = false;
+        ({ data, error } = await supabaseClient
+          .from('cart_items')
+          .select('id, quantity')
+          .eq('user_id', userId)
+          .eq('product_id', productId)
+          .order('created_at', { ascending: false }));
+      }
 
       if (error && error.code !== 'PGRST116') {
         console.warn('Failed to check cart', error.message);
-        return;
+        return false;
       }
 
-      if (data?.id) {
-        const next = data.quantity + 1;
-        const stock = productData?.stock;
-        if (typeof stock === 'number' && next > stock) {
+      const rows = Array.isArray(data) ? data : [];
+      const totalInCart = rows.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+      const matched = rows.find((item) => ((item.size || '') === (selectedSize || '')) || (!cartSupportsSize));
+      const stock = Number(productData?.stock);
+      const hasStock = Number.isFinite(stock) && stock >= 0;
+      if (hasStock && (totalInCart + qty) > stock) {
           const trf = window.__i18nTrf || ((_, params) => `Stok produk tidak cukup. Maksimal ${params.stock}.`);
-          alert(trf('stock_max', { stock }));
-          return;
-        }
+          showThemeAlert(trf('stock_max', { stock }));
+          return false;
+      }
+
+      if (matched?.id) {
+        const next = Number(matched.quantity || 0) + qty;
         const { error: updateError } = await supabaseClient
           .from('cart_items')
           .update({ quantity: next })
-          .eq('id', data.id);
+          .eq('id', matched.id);
         if (updateError) {
           console.warn('Failed to update cart', updateError.message);
+          return false;
         }
-        return;
+        return true;
       }
 
-      const stock = productData?.stock;
-      if (typeof stock === 'number' && stock < 1) {
+      if (hasStock && stock < qty) {
         const tr = window.__i18nTr || (() => 'Stok produk tidak cukup.');
-        alert(tr('stock_not_enough'));
-        return;
+        showThemeAlert(tr('stock_not_enough'));
+        return false;
       }
 
       const { error: insertError } = await supabaseClient
         .from('cart_items')
-        .insert({ user_id: userId, product_id: productId, quantity: 1 });
+        .insert(cartSupportsSize
+          ? { user_id: userId, product_id: productId, size: selectedSize || null, quantity: qty }
+          : { user_id: userId, product_id: productId, quantity: qty });
 
       if (insertError) {
         console.warn('Failed to add to cart', insertError.message);
+        return false;
       }
+      return true;
     }
 
     if (productGrid) {
@@ -455,12 +625,57 @@
         if (button) {
           event.stopPropagation();
           const productId = button.dataset.productId;
-          addToCart(productId);
+          openAddCartModal(productId);
           return;
         }
         const card = event.target.closest('.product-card[data-product-id]');
         if (!card) return;
         goToProductDetail(card.dataset.productId);
+      });
+    }
+
+    if (addCartQtyMinus) {
+      addCartQtyMinus.addEventListener('click', () => {
+        selectedAddCartQty = Math.max(1, selectedAddCartQty - 1);
+        if (addCartQtyValue) addCartQtyValue.textContent = String(selectedAddCartQty);
+      });
+    }
+
+    if (addCartQtyPlus) {
+      addCartQtyPlus.addEventListener('click', () => {
+        const stock = Number(selectedAddCartProduct?.stock);
+        if (Number.isFinite(stock) && stock >= 0 && selectedAddCartQty >= stock) {
+          const trf = window.__i18nTrf || ((_, params) => `Stok produk tidak cukup. Maksimal ${params.stock}.`);
+          showThemeAlert(trf('stock_max', { stock }));
+          return;
+        }
+        selectedAddCartQty += 1;
+        if (addCartQtyValue) addCartQtyValue.textContent = String(selectedAddCartQty);
+      });
+    }
+
+    if (addCartClose) {
+      addCartClose.addEventListener('click', () => setAddCartModalOpen(false));
+    }
+
+    if (addCartModal) {
+      addCartModal.addEventListener('click', (event) => {
+        if (event.target === addCartModal) setAddCartModalOpen(false);
+      });
+    }
+
+    if (addCartConfirm) {
+      addCartConfirm.addEventListener('click', async () => {
+        if (!selectedAddCartProduct?.id) return;
+        const stock = Number(selectedAddCartProduct?.stock);
+        if (Number.isFinite(stock) && stock >= 0 && selectedAddCartQty > stock) {
+          const trf = window.__i18nTrf || ((_, params) => `Stok produk tidak cukup. Maksimal ${params.stock}.`);
+          showThemeAlert(trf('stock_max', { stock }));
+          return;
+        }
+        const size = addCartSize && !addCartSize.disabled ? addCartSize.value : null;
+        const ok = await addToCart(selectedAddCartProduct.id, selectedAddCartQty, size);
+        if (ok) setAddCartModalOpen(false);
       });
     }
 

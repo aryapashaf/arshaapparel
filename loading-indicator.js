@@ -45,7 +45,7 @@
     clearTimeout(showTimer);
     showTimer = setTimeout(function () {
       if (activeRequests > 0) {
-        show('Koneksi tidak stabil, sedang memuat...');
+        show('Mohon tunggu sebentar...');
       }
     }, SLOW_DELAY_MS);
   }
