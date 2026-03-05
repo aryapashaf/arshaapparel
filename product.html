@@ -190,6 +190,16 @@
       </div>
     </div>
 
+    <div class="confirm-modal" id="deleteConfirmModal" aria-hidden="true">
+      <div class="confirm-card" role="dialog" aria-modal="true" aria-labelledby="deleteConfirmText">
+        <p class="confirm-text" id="deleteConfirmText">Delete this product?</p>
+        <div class="confirm-actions">
+          <button class="confirm-btn confirm-cancel" id="deleteConfirmCancel" type="button">Cancel</button>
+          <button class="confirm-btn confirm-delete" id="deleteConfirmOk" type="button">Delete</button>
+        </div>
+      </div>
+    </div>
+
   </main>
 </div>
 <div class="nav-overlay" id="navOverlay"></div>
@@ -228,6 +238,10 @@
   const imagePreview = document.getElementById('imagePreview');
   const mediaPreviewList = document.getElementById('mediaPreviewList');
   const removeImageBtn = document.getElementById('removeImageBtn');
+  const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+  const deleteConfirmText = document.getElementById('deleteConfirmText');
+  const deleteConfirmCancel = document.getElementById('deleteConfirmCancel');
+  const deleteConfirmOk = document.getElementById('deleteConfirmOk');
   const formAlert = document.getElementById('formAlert');
   const nameError = document.getElementById('nameError');
   const priceError = document.getElementById('priceError');
@@ -261,6 +275,49 @@
   function hideFormAlert() {
     if (!formAlert) return;
     formAlert.classList.remove('show');
+  }
+
+  function confirmDeleteDialog(message) {
+    return new Promise((resolve) => {
+      if (!deleteConfirmModal || !deleteConfirmText || !deleteConfirmCancel || !deleteConfirmOk) {
+        resolve(window.confirm(message));
+        return;
+      }
+      const tr = window.__i18nTr || ((key) => key);
+      deleteConfirmText.textContent = message || tr('delete_product_confirm');
+      deleteConfirmCancel.textContent = tr('cancel');
+      deleteConfirmOk.textContent = tr('delete');
+      deleteConfirmModal.classList.add('is-open');
+      deleteConfirmModal.setAttribute('aria-hidden', 'false');
+
+      const cleanup = () => {
+        deleteConfirmModal.classList.remove('is-open');
+        deleteConfirmModal.setAttribute('aria-hidden', 'true');
+        deleteConfirmCancel.removeEventListener('click', onCancel);
+        deleteConfirmOk.removeEventListener('click', onOk);
+        deleteConfirmModal.removeEventListener('click', onBackdrop);
+        document.removeEventListener('keydown', onEsc);
+      };
+      const onCancel = () => {
+        cleanup();
+        resolve(false);
+      };
+      const onOk = () => {
+        cleanup();
+        resolve(true);
+      };
+      const onBackdrop = (event) => {
+        if (event.target === deleteConfirmModal) onCancel();
+      };
+      const onEsc = (event) => {
+        if (event.key === 'Escape') onCancel();
+      };
+
+      deleteConfirmCancel.addEventListener('click', onCancel);
+      deleteConfirmOk.addEventListener('click', onOk);
+      deleteConfirmModal.addEventListener('click', onBackdrop);
+      document.addEventListener('keydown', onEsc);
+    });
   }
 
   function normalizeRequestError(error, fallbackMessage) {
@@ -754,7 +811,7 @@
   }
 
   if (productsBody) {
-    productsBody.addEventListener('click', (event) => {
+    productsBody.addEventListener('click', async (event) => {
       const editBtn = event.target.closest('.action-btn.edit');
       const deleteBtn = event.target.closest('.action-btn.danger');
       if (editBtn) {
@@ -764,7 +821,8 @@
       if (deleteBtn) {
         const id = deleteBtn.dataset.id;
         const tr = window.__i18nTr || (() => 'Delete this product?');
-        if (id && window.confirm(tr('delete_product_confirm'))) {
+        const confirmed = await confirmDeleteDialog(tr('delete_product_confirm'));
+        if (id && confirmed) {
           deleteProduct(id);
         }
       }
