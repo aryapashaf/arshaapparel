@@ -409,8 +409,11 @@
         showCartAlert(tr('clear_cart_failed'));
         return;
       }
-
-      window.location.href = 'orders.html';
+      const tr = window.__i18nTr || (() => 'Pesanan berhasil dibuat.');
+      showCartAlert(tr('order_created_success'));
+      setTimeout(() => {
+        window.location.href = 'orders.html';
+      }, 900);
     }
 
     async function updateQuantity(id, delta) {

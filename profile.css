@@ -68,6 +68,8 @@ body {
   max-width: 980px;
   margin: 34px auto;
   padding: 0 16px;
+  display: grid;
+  gap: 20px;
 }
 
 .profile-card {
@@ -78,6 +80,83 @@ body {
   display: grid;
   grid-template-columns: 240px 1fr;
   gap: 22px;
+}
+
+.orders-card {
+  margin-top: 0;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #101010, #050505);
+  padding: 18px;
+}
+
+main.container > .orders-card {
+  display: block;
+  margin-top: 8px !important;
+  padding: 20px !important;
+}
+
+.orders-head h2 {
+  font-size: 20px;
+}
+
+.orders-list {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.order-item {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #090909;
+  padding: 12px;
+  display: grid;
+  gap: 6px;
+}
+
+.order-main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.order-main h3 {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.order-main p {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.order-status {
+  width: fit-content;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.order-status.is-paid {
+  border-color: rgba(76, 175, 80, 0.45);
+  background: rgba(76, 175, 80, 0.15);
+  color: #9be6a0;
+}
+
+.order-status.is-pending {
+  border-color: rgba(255, 212, 0, 0.45);
+  background: rgba(255, 212, 0, 0.14);
+  color: #ffe680;
+}
+
+.order-date,
+.orders-empty {
+  color: var(--text-muted);
+  font-size: 12px;
 }
 
 .profile-photo-wrap {

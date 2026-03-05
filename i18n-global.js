@@ -52,6 +52,7 @@
       save_order_detail_failed: 'Failed to save order details.',
       reduce_stock_failed: 'Failed to reduce product stock.',
       clear_cart_failed: 'Failed to clear cart.',
+      order_created_success: 'Order created successfully.',
       delete_product_confirm: 'Delete this product?',
       reset_confirm_dialog: 'Reset ALL data? This cannot be undone.',
       resetting_data: 'Resetting data...',
@@ -109,6 +110,8 @@
       ,save_profile: 'Save Profile', profile_saved: 'Profile updated.', profile_need_login: 'Please login first.'
       ,profile_photo_too_large: 'Image is too large. Max 2MB.', profile_invalid_image: 'Invalid image file.'
       ,delete_photo: 'Delete Photo', edit_username: 'Edit Username', done_edit: 'Done', edit_profile: 'Edit Profile'
+      ,my_orders: 'My Orders', loading_orders_user: 'Loading orders...', no_orders_yet: 'No orders yet.'
+      ,order_date: 'Date', status_pending: 'Pending', status_paid: 'Paid'
     },
     id: {
       home: 'Beranda', products: 'Produk', categories: 'Kategori', login: 'Masuk', settings: 'Pengaturan', logout: 'Keluar',
@@ -158,6 +161,7 @@
       save_order_detail_failed: 'Gagal menyimpan detail order.',
       reduce_stock_failed: 'Gagal mengurangi stok produk.',
       clear_cart_failed: 'Gagal menghapus cart.',
+      order_created_success: 'Pesanan berhasil dibuat.',
       delete_product_confirm: 'Hapus produk ini?',
       reset_confirm_dialog: 'Reset SEMUA data? Tindakan ini tidak bisa dibatalkan.',
       resetting_data: 'Sedang mereset data...',
@@ -215,6 +219,8 @@
       ,save_profile: 'Simpan Profil', profile_saved: 'Profil diperbarui.', profile_need_login: 'Silakan login terlebih dahulu.'
       ,profile_photo_too_large: 'Ukuran gambar terlalu besar. Maks 2MB.', profile_invalid_image: 'File gambar tidak valid.'
       ,delete_photo: 'Hapus Foto', edit_username: 'Edit Username', done_edit: 'Selesai', edit_profile: 'Edit Profil'
+      ,my_orders: 'Pesanan Saya', loading_orders_user: 'Memuat pesanan...', no_orders_yet: 'Belum ada pesanan.'
+      ,order_date: 'Tanggal', status_pending: 'Menunggu', status_paid: 'Lunas'
     },
     zh: {
       home: '\u9996\u9875', products: '\u4ea7\u54c1', categories: '\u5206\u7c7b', login: '\u767b\u5f55', settings: '\u8bbe\u7f6e', logout: '\u9000\u51fa',
@@ -264,6 +270,7 @@
       save_order_detail_failed: '\u4fdd\u5b58\u8ba2\u5355\u660e\u7ec6\u5931\u8d25\u3002',
       reduce_stock_failed: '\u6263\u51cf\u5e93\u5b58\u5931\u8d25\u3002',
       clear_cart_failed: '\u6e05\u7a7a\u8d2d\u7269\u8f66\u5931\u8d25\u3002',
+      order_created_success: '\u8ba2\u5355\u521b\u5efa\u6210\u529f\u3002',
       delete_product_confirm: '\u786e\u8ba4\u5220\u9664\u8be5\u5546\u54c1\uff1f',
       reset_confirm_dialog: '\u786e\u8ba4\u91cd\u7f6e\u6240\u6709\u6570\u636e\uff1f\u6b64\u64cd\u4f5c\u4e0d\u53ef\u64a4\u9500\u3002',
       resetting_data: '\u6b63\u5728\u91cd\u7f6e\u6570\u636e...',
@@ -320,7 +327,9 @@
       role_label: '\u89d2\u8272', member_since: '\u52a0\u5165\u65f6\u95f4', profile_note: '\u4e2a\u4eba\u5934\u50cf\u548c\u540d\u79f0\u4f1a\u4fdd\u5b58\u5728\u6b64\u8bbe\u5907\u4e0a\u3002',
       save_profile: '\u4fdd\u5b58\u4e2a\u4eba\u4fe1\u606f', profile_saved: '\u4e2a\u4eba\u4fe1\u606f\u5df2\u66f4\u65b0\u3002', profile_need_login: '\u8bf7\u5148\u767b\u5f55\u3002',
       profile_photo_too_large: '\u56fe\u7247\u8fc7\u5927\uff0c\u6700\u5927 2MB\u3002', profile_invalid_image: '\u56fe\u7247\u6587\u4ef6\u65e0\u6548\u3002',
-      delete_photo: '\u5220\u9664\u5934\u50cf', edit_username: '\u7f16\u8f91\u7528\u6237\u540d', done_edit: '\u5b8c\u6210', edit_profile: '\u7f16\u8f91\u4e2a\u4eba\u8d44\u6599'
+      delete_photo: '\u5220\u9664\u5934\u50cf', edit_username: '\u7f16\u8f91\u7528\u6237\u540d', done_edit: '\u5b8c\u6210', edit_profile: '\u7f16\u8f91\u4e2a\u4eba\u8d44\u6599',
+      my_orders: '\u6211\u7684\u8ba2\u5355', loading_orders_user: '\u6b63\u5728\u52a0\u8f7d\u8ba2\u5355...', no_orders_yet: '\u6682\u65e0\u8ba2\u5355\u3002',
+      order_date: '\u65e5\u671f', status_pending: '\u5f85\u5904\u7406', status_paid: '\u5df2\u652f\u4ed8'
     },
     ar: {
       home: '\u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629', products: '\u0627\u0644\u0645\u0646\u062a\u062c\u0627\u062a', categories: '\u0627\u0644\u0641\u0626\u0627\u062a', login: '\u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644', settings: '\u0627\u0644\u0625\u0639\u062f\u0627\u062f\u0627\u062a', logout: '\u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062e\u0631\u0648\u062c',
@@ -370,6 +379,7 @@
       save_order_detail_failed: '\u0641\u0634\u0644 \u062d\u0641\u0638 \u062a\u0641\u0627\u0635\u064a\u0644 \u0627\u0644\u0637\u0644\u0628.',
       reduce_stock_failed: '\u0641\u0634\u0644 \u062e\u0641\u0636 \u0645\u062e\u0632\u0648\u0646 \u0627\u0644\u0645\u0646\u062a\u062c.',
       clear_cart_failed: '\u0641\u0634\u0644 \u062a\u0641\u0631\u064a\u063a \u0627\u0644\u0633\u0644\u0629.',
+      order_created_success: '\u062a\u0645 \u0625\u0646\u0634\u0627\u0621 \u0627\u0644\u0637\u0644\u0628 \u0628\u0646\u062c\u0627\u062d.',
       delete_product_confirm: '\u0647\u0644 \u062a\u0631\u064a\u062f \u062d\u0630\u0641 \u0647\u0630\u0627 \u0627\u0644\u0645\u0646\u062a\u062c\u061f',
       reset_confirm_dialog: '\u0625\u0639\u0627\u062f\u0629 \u062a\u0639\u064a\u064a\u0646 \u0643\u0644 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a\u061f \u0644\u0627 \u064a\u0645\u0643\u0646 \u0627\u0644\u062a\u0631\u0627\u062c\u0639 \u0639\u0646 \u0647\u0630\u0627.',
       resetting_data: '\u062c\u0627\u0631\u064a \u0625\u0639\u0627\u062f\u0629 \u062a\u0639\u064a\u064a\u0646 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a...',
@@ -426,7 +436,9 @@
       role_label: '\u0627\u0644\u062f\u0648\u0631', member_since: '\u0639\u0636\u0648 \u0645\u0646\u0630', profile_note: '\u064a\u062a\u0645 \u062d\u0641\u0638 \u0635\u0648\u0631\u0629 \u0627\u0644\u0645\u0644\u0641 \u0648\u0627\u0644\u0627\u0633\u0645 \u0639\u0644\u0649 \u0647\u0630\u0627 \u0627\u0644\u062c\u0647\u0627\u0632.',
       save_profile: '\u062d\u0641\u0638 \u0627\u0644\u0645\u0644\u0641', profile_saved: '\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0645\u0644\u0641.', profile_need_login: '\u064a\u0631\u062c\u0649 \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0623\u0648\u0644\u0627\u064b.',
       profile_photo_too_large: '\u0627\u0644\u0635\u0648\u0631\u0629 \u0643\u0628\u064a\u0631\u0629 \u062c\u062f\u0627\u064b. \u0627\u0644\u062d\u062f \u0627\u0644\u0623\u0642\u0635\u0649 2 \u0645\u064a\u062c\u0627.', profile_invalid_image: '\u0645\u0644\u0641 \u0635\u0648\u0631\u0629 \u063a\u064a\u0631 \u0635\u0627\u0644\u062d.',
-      delete_photo: '\u062d\u0630\u0641 \u0627\u0644\u0635\u0648\u0631\u0629', edit_username: '\u062a\u0639\u062f\u064a\u0644 \u0627\u0633\u0645 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645', done_edit: '\u062a\u0645', edit_profile: '\u062a\u062d\u0631\u064a\u0631 \u0627\u0644\u0645\u0644\u0641'
+      delete_photo: '\u062d\u0630\u0641 \u0627\u0644\u0635\u0648\u0631\u0629', edit_username: '\u062a\u0639\u062f\u064a\u0644 \u0627\u0633\u0645 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645', done_edit: '\u062a\u0645', edit_profile: '\u062a\u062d\u0631\u064a\u0631 \u0627\u0644\u0645\u0644\u0641',
+      my_orders: '\u0637\u0644\u0628\u0627\u062a\u064a', loading_orders_user: '\u062c\u0627\u0631\u064a \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0637\u0644\u0628\u0627\u062a...', no_orders_yet: '\u0644\u0627 \u062a\u0648\u062c\u062f \u0637\u0644\u0628\u0627\u062a \u0628\u0639\u062f.',
+      order_date: '\u0627\u0644\u062a\u0627\u0631\u064a\u062e', status_pending: '\u0642\u064a\u062f \u0627\u0644\u0627\u0646\u062a\u0638\u0627\u0631', status_paid: '\u0645\u062f\u0641\u0648\u0639'
     },
     de: {
       home: 'Start', products: 'Produkte', categories: 'Kategorien', login: 'Anmelden', settings: 'Einstellungen', logout: 'Abmelden',
@@ -476,6 +488,7 @@
       save_order_detail_failed: 'Bestelldetails konnten nicht gespeichert werden.',
       reduce_stock_failed: 'Produktbestand konnte nicht reduziert werden.',
       clear_cart_failed: 'Warenkorb konnte nicht geleert werden.',
+      order_created_success: 'Bestellung erfolgreich erstellt.',
       delete_product_confirm: 'Dieses Produkt löschen?',
       reset_confirm_dialog: 'ALLE Daten zurücksetzen? Dies kann nicht rückgängig gemacht werden.',
       resetting_data: 'Daten werden zurückgesetzt...',
@@ -533,6 +546,8 @@
       save_profile: 'Profil speichern', profile_saved: 'Profil aktualisiert.', profile_need_login: 'Bitte zuerst anmelden.',
       profile_photo_too_large: 'Bild ist zu gross. Maximal 2 MB.', profile_invalid_image: 'Ungultige Bilddatei.',
       delete_photo: 'Foto loschen', edit_username: 'Benutzernamen bearbeiten', done_edit: 'Fertig', edit_profile: 'Profil bearbeiten'
+      ,my_orders: 'Meine Bestellungen', loading_orders_user: 'Bestellungen werden geladen...', no_orders_yet: 'Noch keine Bestellungen.'
+      ,order_date: 'Datum', status_pending: 'Ausstehend', status_paid: 'Bezahlt'
     }
   };
 
@@ -896,6 +911,7 @@
     setText('#profilePageTitle', 'profile_page');
     setText('#editProfileBtn', 'edit_profile');
     setText('#editProfileTitle', 'edit_profile');
+    setText('#myOrdersTitle', 'my_orders');
     setText('#modalChangePhotoBtn', 'change_photo');
     setText('#modalDeletePhotoBtn', 'delete_photo');
     setText('#cancelEditBtn', 'cancel');

@@ -45,6 +45,13 @@
         <button class="btn-primary" id="editProfileBtn" type="button">Edit Profile</button>
       </div>
     </section>
+
+    <section class="orders-card">
+      <div class="orders-head">
+        <h2 id="myOrdersTitle">My Orders</h2>
+      </div>
+      <div class="orders-list" id="profileOrdersList"></div>
+    </section>
   </main>
 
   <div class="profile-modal" id="editProfileModal" aria-hidden="true">
@@ -80,7 +87,12 @@
 
   <div class="profile-toast" id="profileToast" role="alert" aria-live="polite"></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-init.js"></script>
+  <script src="currency-converter.js"></script>
   <script>
+    const supabaseClient = window.supabaseClient;
     const photoInput = document.getElementById('photoInput');
     const profilePhoto = document.getElementById('profilePhoto');
     const modalProfilePhoto = document.getElementById('modalProfilePhoto');
@@ -97,6 +109,8 @@
     const saveEditBtn = document.getElementById('saveEditBtn');
     const modalChangePhotoBtn = document.getElementById('modalChangePhotoBtn');
     const modalDeletePhotoBtn = document.getElementById('modalDeletePhotoBtn');
+    const ordersCard = document.querySelector('.orders-card');
+    const profileOrdersList = document.getElementById('profileOrdersList');
     const profileToast = document.getElementById('profileToast');
 
     let loginStorage = null;
@@ -111,7 +125,15 @@
         profile_saved: 'Profile updated.',
         profile_need_login: 'Please login first.',
         profile_photo_too_large: 'Image is too large. Max 2MB.',
-        profile_invalid_image: 'Invalid image file.'
+        profile_invalid_image: 'Invalid image file.',
+        my_orders: 'My Orders',
+        loading_orders_user: 'Loading orders...',
+        no_orders_yet: 'No orders yet.',
+        order_product: 'Product',
+        order_status: 'Status',
+        order_date: 'Date',
+        status_pending: 'Pending',
+        status_paid: 'Paid'
       };
       return fallback[key] || key;
     }
@@ -174,6 +196,104 @@
       return date.toLocaleDateString();
     }
 
+    function formatPrice(value) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return '-';
+      const lang = localStorage.getItem('siteLanguage') || 'en';
+      return (window.currencyService && window.currencyService.formatFromIDR)
+        ? window.currencyService.formatFromIDR(number, lang)
+        : String(number);
+    }
+
+    function getStatusLabel(status) {
+      const v = String(status || '').toLowerCase();
+      if (v === 'paid') return tr('status_paid');
+      if (v === 'pending') return tr('status_pending');
+      return status || tr('status_pending');
+    }
+
+    function renderOrders(items) {
+      if (!profileOrdersList) return;
+      if (!Array.isArray(items) || items.length === 0) {
+        profileOrdersList.innerHTML = `<p class="orders-empty">${tr('no_orders_yet')}</p>`;
+        return;
+      }
+      profileOrdersList.innerHTML = items.map((item) => {
+        const status = String(item.payment_status || 'pending').toLowerCase();
+        const statusClass = status === 'paid' ? 'is-paid' : 'is-pending';
+        const quantity = Number(item.quantity || 0);
+        const priceText = formatPrice(item.price || 0);
+        return `
+          <article class="order-item">
+            <div class="order-main">
+              <h3>${item.product_name || '-'}</h3>
+              <p>${quantity > 0 ? `x${quantity} • ` : ''}${priceText}</p>
+            </div>
+            <span class="order-status ${statusClass}">${getStatusLabel(status)}</span>
+            <p class="order-date">${tr('order_date')}: ${formatDate(item.created_at)}</p>
+          </article>
+        `;
+      }).join('');
+    }
+
+    async function fetchOrderHistory() {
+      if (!profileOrdersList) return;
+      profileOrdersList.innerHTML = `<p class="orders-empty">${tr('loading_orders_user')}</p>`;
+      if (!supabaseClient || !loginInfo) {
+        profileOrdersList.innerHTML = `<p class="orders-empty">${tr('no_orders_yet')}</p>`;
+        return;
+      }
+      const userId = loginInfo.email || loginInfo.name;
+      if (!userId) {
+        profileOrdersList.innerHTML = `<p class="orders-empty">${tr('no_orders_yet')}</p>`;
+        return;
+      }
+
+      const { data: orders, error: orderError } = await supabaseClient
+        .from('orders')
+        .select('id, created_at')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(30);
+
+      if (orderError || !Array.isArray(orders) || orders.length === 0) {
+        profileOrdersList.innerHTML = `<p class="orders-empty">${tr('no_orders_yet')}</p>`;
+        return;
+      }
+
+      const orderIds = orders.map((order) => order.id).filter(Boolean);
+      if (orderIds.length === 0) {
+        profileOrdersList.innerHTML = `<p class="orders-empty">${tr('no_orders_yet')}</p>`;
+        return;
+      }
+
+      const [{ data: orderItems, error: itemError }, { data: payments }] = await Promise.all([
+        supabaseClient
+          .from('order_items')
+          .select('id, order_id, product_name, quantity, price')
+          .in('order_id', orderIds)
+          .order('id', { ascending: false }),
+        supabaseClient
+          .from('payments')
+          .select('order_id, status')
+          .in('order_id', orderIds)
+      ]);
+
+      if (itemError || !Array.isArray(orderItems) || orderItems.length === 0) {
+        profileOrdersList.innerHTML = `<p class="orders-empty">${tr('no_orders_yet')}</p>`;
+        return;
+      }
+
+      const orderMap = new Map(orders.map((order) => [order.id, order]));
+      const paymentMap = new Map((payments || []).map((pay) => [pay.order_id, pay.status]));
+      const merged = orderItems.map((item) => ({
+        ...item,
+        created_at: orderMap.get(item.order_id)?.created_at || null,
+        payment_status: paymentMap.get(item.order_id) || 'pending'
+      }));
+      renderOrders(merged);
+    }
+
     function applyProfile() {
       loginInfo = getLoginData();
       if (!loginInfo) {
@@ -195,6 +315,13 @@
       memberSinceValue.textContent = formatDate(loginInfo.loggedAt || loginInfo.created_at || Date.now());
       renderAvatar(profilePhoto, name, photoData);
       renderAvatar(modalProfilePhoto, name, photoData);
+      const isUser = String(loginInfo.role || 'user').toLowerCase() === 'user';
+      if (ordersCard) {
+        ordersCard.style.display = isUser ? '' : 'none';
+      }
+      if (isUser) {
+        fetchOrderHistory();
+      }
     }
 
     function openEditModal() {
@@ -307,7 +434,11 @@
       if (event.key === 'Escape') closeEditModal();
     });
 
-    applyProfile();
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        applyProfile();
+      }, 0);
+    });
   </script>
   <script src="i18n-global.js"></script>
   <script src="loading-indicator.js"></script>
